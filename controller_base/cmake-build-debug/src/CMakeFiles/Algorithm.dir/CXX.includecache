@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/Algorithm/Algorithm.h
+
+/Users/drodriguez/Documents/GitHub/UAVSPS/controller_base/src/Algorithm/Algorithm.cpp
+iostream
+-
+Algorithm/Algorithm.h
+-
+
