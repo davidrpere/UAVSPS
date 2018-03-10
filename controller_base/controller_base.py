@@ -6,6 +6,7 @@ import pandas as pd
 from UAV import UAV
 import threading
 from time import sleep
+from sklearn.neighbors import NearestNeighbors
 
 
 altura_vuelo_uav = 20
@@ -104,7 +105,7 @@ def calcularNodosGrafo (divisiones_x, divisiones_y):
     '''
     #return [(pos_x, pos_y) for pos_x in divisiones_x for pos_y in divisiones_y]
     nodos = []
-    id = 1
+    id = 0
     for pos_x in divisiones_x:
         fila_nodos = []
         for pos_y in divisiones_y:
@@ -226,7 +227,7 @@ def calcularDivisiones(lado, footprint, fraccion_solape):
     return [i * distancia - (distancia / 2) for i in range (1, num_filas + 1)]
 
 
-def main (): # def calcularGrafo (x, y, altura_vuelo_uav, caracteristicas_sensor):
+def getNodosGrafo (): # def calcularGrafo (x, y, altura_vuelo_uav, caracteristicas_sensor):
     x = getMeters(southWest,southEast)
     y = getMeters(southWest,northWest)
 
@@ -238,48 +239,126 @@ def main (): # def calcularGrafo (x, y, altura_vuelo_uav, caracteristicas_sensor
 
     nodos = calcularNodosGrafo (divisiones_x, divisiones_y)
     grafo, edges = calcularGrafo(nodos)
-    #dibujarGrafo(grafo, edges, x/y)
-
-    #grid = dibujarNodos (grafo, x/y)
-
     
-    grid, old_min, old_max, new_min, new_max = dibujarNodosEnImagen (grafo, x, y)
+    return grafo
 
 
-    uav = UAV (0, caracteristicas_sensor, grafo[1], color='k', style='--') # color='m'
+def getCromosomaNearestNeighbourRR (nodos, drones, nbrs):
+    ciudades_dron = {}
+    cromosoma = []
+    ciudades_visitadas = []
 
-    grid.savefig('./animacion/animacion_0.png')
+    posiciones_actuales = {}
+    for dron in drones:
+        posiciones_actuales[dron.id] = dron.posicion_actual
+        ciudades_dron[dron.id] = []
 
-    count = 1
-    for nodo in [1,2,3,4,5,6,12,11,10,9,8,7,13,14,15,16,17,18,24,23,22,21,20,19]:
-        #ultima_posicion = uav.posicion_actual.copy()
-        ultima_posicion = escalar(uav.posicion_actual.copy(), old_min, old_max, new_min, new_max)
-        threading.Thread(None, uav.goToDummy, args = (grafo[nodo],)).start()
+    while len(ciudades_visitadas) < len(nodos):
+        for dron in drones:
+            _, indices = nbrs.kneighbors([posiciones_actuales[dron.id]])
 
-        sleep(0.15)
-        while uav.enmovimiento:
-            if uav.posicion_actual[0] != ultima_posicion[0] or uav.posicion_actual[1] != ultima_posicion[1]:
-                #nueva_posicion = uav.posicion_actual.copy()
-                nueva_posicion = escalar(uav.posicion_actual.copy(), old_min, old_max, new_min, new_max)
-                grid.axes[0][0].plot((ultima_posicion[0], nueva_posicion[0]), (ultima_posicion[1], nueva_posicion[1]), '{}{}'.format(uav.color, uav.style))
-                nueva_posicion = nueva_posicion
-                
-                grid.savefig('./animacion/animacion_{}.png'.format(count))
-                count += 1
-            sleep(0.5)
+            for indice in indices[0]:
+                if indice not in ciudades_visitadas:
+                    ciudades_dron[dron.id].append(indice)
+                    posiciones_actuales[dron.id] = nodos[indice]
+                    ciudades_visitadas.append(indice)
+                    break
 
+    num_ciudades_dron = []
+    for ciudades in ciudades_dron.items():
+        for ciudad in ciudades[1]:
+            cromosoma.append(ciudad)
+        num_ciudades_dron.append(len(ciudades[1]))
+
+    for n_ciudades in num_ciudades_dron:
+        cromosoma.append(n_ciudades)
+
+    return cromosoma
+
+
+def getPoblacionNearestNeighbour (nodos, drones, nbrs):
+    cromosoma, ciudades_dron = [], []
+    for dron in drones:
+        posicion_actual = dron.posicion_actual
+        vecinos_dron = 0
+        while vecinos_dron < n_vecinos and len(cromosoma) < len(nodos):
+            _, indices = nbrs.kneighbors([posicion_actual])
+            for indice in indices[0]:
+                if indice not in cromosoma:
+                    cromosoma.append(indice)
+                    posicion_actual = nodos[indice]
+                    vecinos_dron += 1
+                    break
+
+        ciudades_dron.append(vecinos_dron)
+
+    for n_ciudades in ciudades_dron:
+        cromosoma.append(n_ciudades)
+
+    return cromosoma
+
+
+def getCromosomaRandom (nodos, drones):
+    cromosoma = list(nodos.keys())
+    np.random.shuffle(cromosoma)
     
+    ciudades = [0]
+    while 0 in ciudades: # Asegurar que todos los UAVs van al menos a un nodo
+        ciudades = np.round(np.random.dirichlet(np.ones(len(drones)),size=1)*len(nodos)).astype(int)
 
-    #coordCart = nodos[0][0][1]
-    #coordGeo = cartToGeoCoord(coordCart[0],0,southWest)
+    for ciudad in ciudades[0]:
+        cromosoma.append(ciudad)
+
+    return cromosoma
+
+
+def getFitnessCromosoma (cromosoma, posicion_inicial_drones, nodos):
+    ciudades_dron = []
+    last_index = 0
+    for n_ciudades_dron in cromosoma[-len(posicion_inicial_drones):]:
+        ciudades_dron.append(cromosoma[last_index:last_index + n_ciudades_dron])
+        last_index += n_ciudades_dron
+
+    fitness = 0
+    for i, posicion_actual_dron in enumerate(posicion_inicial_drones):
+        
+        distancia_recorrida_dron = 0
+        for ciudad in ciudades_dron[i]:
+            distancia_recorrida_dron += distancia(posicion_actual_dron, nodos[ciudad])
+            posicion_actual_dron = nodos[ciudad]
+
+        fitness += distancia_recorrida_dron
+
+    return fitness
+
+
+def main ():
+    nodos = getNodosGrafo()
+
+    drones = [UAV (0, caracteristicas_sensor, nodos[0], color='m', style='--'), 
+              UAV (1, caracteristicas_sensor, nodos[21], color='g', style='--'),
+              UAV (2, caracteristicas_sensor, nodos[2], color='b', style='--'),
+              UAV (3, caracteristicas_sensor, [0.,0.], color='y', style='--')]
+    
+    for dron in drones:
+        print("Dron", dron.id, "- posicion inicial ", dron.posicion_actual)
+
+    n_vecinos = len(nodos) // len(drones)
+    nbrs = NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values()))
+
+    cromosoma = getCromosomaRandom(nodos, drones)
+    print(cromosoma)
+
+    posiciones_actuales = []
+    for dron in drones:
+        posiciones_actuales.append(dron.posicion_actual)
+
+    print("Fitness:", getFitnessCromosoma(cromosoma, posiciones_actuales, nodos))
+
+    dibujarNodos(nodos,1)
     plt.show()
-
-
-
-
 
 
 
 if __name__ == '__main__':
     main()
-
