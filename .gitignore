@@ -21,3 +21,9 @@ Thumbs.db
 build
 .ipynb_checkpoints
 .idea
+
+#Visual Studio#
+*.sln
+*.pyproj
+__pycache__
+.vs
