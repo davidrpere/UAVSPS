@@ -244,10 +244,12 @@ def getNodosGrafo (): # def calcularGrafo (x, y, altura_vuelo_uav, caracteristic
 
 
 def getCromosomaNearestNeighbourRR (nodos, drones, nbrs):
+
+    np.random.shuffle(drones)
+
     ciudades_dron = {}
     cromosoma = []
     ciudades_visitadas = []
-
     posiciones_actuales = {}
     for dron in drones:
         posiciones_actuales[dron.id] = dron.posicion_actual
@@ -276,8 +278,12 @@ def getCromosomaNearestNeighbourRR (nodos, drones, nbrs):
     return cromosoma
 
 
-def getPoblacionNearestNeighbour (nodos, drones, nbrs):
+def getCromosomaNearestNeighbour (nodos, drones, nbrs):
+
+    np.random.shuffle(drones)
+
     cromosoma, ciudades_dron = [], []
+    n_vecinos = len(nodos) // len(drones)
     for dron in drones:
         posicion_actual = dron.posicion_actual
         vecinos_dron = 0
@@ -313,6 +319,9 @@ def getCromosomaRandom (nodos, drones):
 
 
 def getFitnessCromosoma (cromosoma, posicion_inicial_drones, nodos):
+    '''
+    posicion_inicial_drones = [dron.posicion_actual for dron in drones]
+    '''
     ciudades_dron = []
     last_index = 0
     for n_ciudades_dron in cromosoma[-len(posicion_inicial_drones):]:
@@ -332,6 +341,76 @@ def getFitnessCromosoma (cromosoma, posicion_inicial_drones, nodos):
     return fitness
 
 
+def dibujarRutasCromosoma(nodos, drones, cromosoma):
+    '''
+    '''
+    grid = dibujarNodos(nodos, aspect = max(np.array(list(nodos.values()))[:,0]) / max(np.array(list(nodos.values()))[:,1]))
+    n_drones = len(drones)
+    ultimo_indice = 0
+    for i, dron in enumerate(drones):
+
+        n_ciudades = cromosoma[-(n_drones - i)]
+        ciudades =  cromosoma[ultimo_indice:ultimo_indice+n_ciudades]
+
+        origen = dron.posicion_actual
+        for ciudad in ciudades:
+            destino = nodos[ciudad]
+            grid.axes[0][0].plot((origen[0], destino[0]), (origen[1], destino[1]), '{}{}'.format(dron.color, dron.style))
+            origen = destino
+        
+        ultimo_indice += n_ciudades
+
+    plt.show()
+    plt.clf()
+
+
+
+def selection (fitness):
+    '''
+    Rank-based roulette-wheel (Goldberg, 1989)
+    '''
+    total = sum(fitness)
+
+    probs_ruleta = fitness/total
+
+
+    return fitness
+
+
+    
+
+
+def GA (nodos, drones, nbrs = None, tam_poblacion = 100, perc_nearest_rr= 0.4, perc_nearest = 0.4, perc_random = 0.2, prob_crossover = 0.85, prob_mutation = 0.01):
+
+    if nbrs is None:
+        nbrs = NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values()))
+
+    # Poblacion inicial:
+    poblacion_inicial = []
+    poblacion_inicial += [getCromosomaRandom(nodos, drones) for i in range(int(tam_poblacion*perc_random))]
+    np.random.shuffle(poblacion_inicial)
+    poblacion_inicial += [getCromosomaNearestNeighbourRR(nodos, drones, nbrs) for i in range(int(tam_poblacion*perc_nearest_rr))]
+    np.random.shuffle(poblacion_inicial)
+    poblacion_inicial += [getCromosomaNearestNeighbour(nodos, drones, nbrs) for i in range(int(tam_poblacion*perc_nearest))]
+    np.random.shuffle(poblacion_inicial)
+
+    # Fitness:
+    fitness = [getFitnessCromosoma(cromosoma, [dron.posicion_actual for dron in drones], nodos) for cromosoma in poblacion_inicial]
+
+
+    print()
+    # Selection:
+    poblacion = selection (fitness)
+
+
+
+    return nbrs
+
+
+    
+
+
+
 def main ():
     nodos = getNodosGrafo()
 
@@ -343,20 +422,14 @@ def main ():
     for dron in drones:
         print("Dron", dron.id, "- posicion inicial ", dron.posicion_actual)
 
-    n_vecinos = len(nodos) // len(drones)
-    nbrs = NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values()))
+    GA(nodos, drones)
 
-    cromosoma = getCromosomaRandom(nodos, drones)
-    print(cromosoma)
 
-    posiciones_actuales = []
-    for dron in drones:
-        posiciones_actuales.append(dron.posicion_actual)
 
-    print("Fitness:", getFitnessCromosoma(cromosoma, posiciones_actuales, nodos))
 
-    dibujarNodos(nodos,1)
-    plt.show()
+    #cromosoma =  getCromosomaNearestNeighbour (nodos, drones, NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values())))
+    #print(cromosoma)
+    #dibujarRutasCromosoma(nodos, drones,cromosoma)
 
 
 
