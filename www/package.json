@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/davidrpere/UAVSPS#readme",
   "dependencies": {
+    "express": "^4.16.3",
     "socket.io": "^2.0.4",
     "zeromq": "^4.6.0"
   }
