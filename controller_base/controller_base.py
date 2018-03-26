@@ -318,7 +318,7 @@ def getCromosomaRandom (nodos, drones):
     return cromosoma
 
 
-def getFitnessCromosoma (cromosoma, posicion_inicial_drones, nodos):
+def getDistanciaRecorridaCromosoma (cromosoma, posicion_inicial_drones, nodos):
     '''
     posicion_inicial_drones = [dron.posicion_actual for dron in drones]
     '''
@@ -364,47 +364,100 @@ def dibujarRutasCromosoma(nodos, drones, cromosoma):
     plt.clf()
 
 
-
-def selection (fitness):
+def getFitness (poblacion_inicial, drones, nodos):
     '''
-    Rank-based roulette-wheel (Goldberg, 1989)
+    Mayor fitness -> menor distancia recorrida
     '''
-    total = sum(fitness)
-
-    probs_ruleta = fitness/total
+    return 1 / np.array([getDistanciaRecorridaCromosoma(cromosoma, [dron.posicion_actual for dron in drones], nodos) for cromosoma in poblacion_inicial])
 
 
-    return fitness
+def selectionRouletteWheel (fitness):
+    '''
+    Roulette-wheel selection
 
+    Devuelve los indices de los cromosomas seleccionados.
+    '''
+    probs_ruleta = fitness / sum(fitness)
+    
+    padres = []
+    while len(padres) != 2:
+        p = np.random.uniform()
+        for index, prob in enumerate(probs_ruleta):
+            if index in padres:
+                continue
+            if p <= 0:
+                padres.append(index)
+                break
+            p -= prob
+
+    return padres
+
+
+def selectionRankRouletteWheel (fitness):
+    '''
+    Rank-based roulette-wheel selection
+    # https://stackoverflow.com/questions/20290831/how-to-perform-rank-based-selection-in-a-genetic-algorithm
+    '''
+    n = len(fitness)
+    sum_rank = n * (n + 1) / 2 # Fórmula de Gauss para obtener la suma de todos los rankings (suma de enteros de 1 a N):
+
+    probs_ruleta =  (1 + np.argsort(fitness)) / sum_rank
+    
+    padres = []
+    while len(padres) != 2:
+        p = np.random.uniform()
+        for index, prob in enumerate(probs_ruleta):
+            if index in padres:
+                continue
+            if p <= 0:
+                padres.append(index)
+                break
+            p -= prob
+
+    return padres
+
+
+def crossover (padre, madre):
+
+    new_cromosoma = []
+
+    # TODO: crossover
+
+    return new_cromosoma
 
     
 
 
-def GA (nodos, drones, nbrs = None, tam_poblacion = 100, perc_nearest_rr= 0.4, perc_nearest = 0.4, perc_random = 0.2, prob_crossover = 0.85, prob_mutation = 0.01):
+def GA (nodos, drones, n_iteraciones = 500, tam_poblacion = 100, perc_nearest_rr= 0.4, perc_nearest = 0.4, perc_random = 0.2, prob_crossover = 0.85, prob_mutation = 0.01):
 
-    if nbrs is None:
-        nbrs = NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values()))
+    nbrs = NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values()))
 
     # Poblacion inicial:
-    poblacion_inicial = []
-    poblacion_inicial += [getCromosomaRandom(nodos, drones) for i in range(int(tam_poblacion*perc_random))]
-    np.random.shuffle(poblacion_inicial)
-    poblacion_inicial += [getCromosomaNearestNeighbourRR(nodos, drones, nbrs) for i in range(int(tam_poblacion*perc_nearest_rr))]
-    np.random.shuffle(poblacion_inicial)
-    poblacion_inicial += [getCromosomaNearestNeighbour(nodos, drones, nbrs) for i in range(int(tam_poblacion*perc_nearest))]
-    np.random.shuffle(poblacion_inicial)
+    poblacion = [getCromosomaRandom(nodos, drones) for i in range(int(tam_poblacion*perc_random))]
+    poblacion += [getCromosomaNearestNeighbourRR(nodos, drones, nbrs) for i in range(int(tam_poblacion*perc_nearest_rr))]
+    poblacion += [getCromosomaNearestNeighbour(nodos, drones, nbrs) for i in range(int(tam_poblacion*perc_nearest))]
+    np.random.shuffle(poblacion)
+
+    # TODO: bucle n_iteraciones
 
     # Fitness:
-    fitness = [getFitnessCromosoma(cromosoma, [dron.posicion_actual for dron in drones], nodos) for cromosoma in poblacion_inicial]
+    fitness = getFitness(poblacion, drones, nodos)
 
-
-    print()
     # Selection:
-    poblacion = selection (fitness)
+    index_padres = selectionRankRouletteWheel (fitness)
 
 
+    print(poblacion[index_padres[0]], "\n", poblacion[index_padres[1]])
 
-    return nbrs
+    # Crossover
+    cromosoma = crossover (poblacion[index_padres[0]], poblacion[index_padres[1]])
+
+    # Mutacion
+
+    # TODO: con probabilidad prob_mutation hacer mutacion
+    
+
+
 
 
     
@@ -419,6 +472,7 @@ def main ():
               UAV (2, caracteristicas_sensor, nodos[2], color='b', style='--'),
               UAV (3, caracteristicas_sensor, [0.,0.], color='y', style='--')]
     
+    print("Iniciando misión")
     for dron in drones:
         print("Dron", dron.id, "- posicion inicial ", dron.posicion_actual)
 
