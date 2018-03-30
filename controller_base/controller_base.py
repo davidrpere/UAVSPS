@@ -21,6 +21,8 @@ southEast = [42.17112037162631, -8.678347434154489] #(latitud, longitud)
 
 posicion_base = [0,0] # TODO: obtener
 
+ruta_logs = './logs/prueba/'
+
 '''
 SUPOSICIONES:
 - Las cámaras de los drones tienen las mismas características y están posicionadas con el mismo ángulo de inclinación.
@@ -376,7 +378,8 @@ def getFitness (poblacion_inicial, drones, nodos):
     '''
     Mayor fitness -> menor distancia recorrida
     '''
-    return 1 / np.array([getDistanciaRecorridaCromosoma(cromosoma, [dron.posicion_actual for dron in drones], nodos) for cromosoma in poblacion_inicial])
+    #return 1 / np.array([getDistanciaRecorridaCromosoma(cromosoma, [dron.posicion_actual for dron in drones], nodos) for cromosoma in poblacion_inicial])
+    return np.array([getDistanciaRecorridaCromosoma(cromosoma, [dron.posicion_actual for dron in drones], nodos) for cromosoma in poblacion_inicial])
 
 
 def selectionRouletteWheel (fitness):
@@ -409,7 +412,7 @@ def selectionRankRouletteWheel (fitness):
     n = len(fitness)
     sum_rank = n * (n + 1) / 2 # Fórmula de Gauss para obtener la suma de todos los rankings (suma de enteros de 1 a N):
 
-    probs_ruleta =  (1 + np.argsort(-fitness)) / sum_rank
+    probs_ruleta =  (1 + np.argsort(fitness)) / sum_rank
     
     padres = []
     while len(padres) != 2:
@@ -526,12 +529,12 @@ def replacementSteadyState (parent_1, parent_2, child_1, child_2, drones, nodos)
     Se seleccionan los 2 cromosomas con mayor fitness de entre los padres e hijos.
     '''
     poblacion_cromosomas = [parent_1, parent_2, child_1, child_2]
-    indices_mayor_menor = np.argsort(-getFitness(poblacion_cromosomas, drones, nodos))
+    indices_mejor_a_peor = np.argsort(getFitness(poblacion_cromosomas, drones, nodos))
 
-    return poblacion_cromosomas[0], poblacion_cromosomas[1]
+    return poblacion_cromosomas[indices_mejor_a_peor[0]], poblacion_cromosomas[indices_mejor_a_peor[1]]
 
 
-def GA (nodos, drones, n_iteraciones = 500, tam_poblacion = 100, perc_nearest_rr= 0.4, perc_nearest = 0.4, perc_random = 0.2, prob_crossover = 0.85, prob_mutation = 0.01):
+def GA (nodos, drones, n_iteraciones = 5000, tam_poblacion = 100, perc_nearest_rr= 0.4, perc_nearest = 0.4, perc_random = 0.2, prob_crossover = 0.85, prob_mutation = 0.01):
 
     dir_logs = '{},{},{},{},{},{},{}'.format(n_iteraciones, tam_poblacion, perc_nearest_rr, perc_nearest, perc_random, prob_crossover, prob_mutation)
 
@@ -558,13 +561,6 @@ def GA (nodos, drones, n_iteraciones = 500, tam_poblacion = 100, perc_nearest_rr
         if prob_mutation >= np.random.random(): # TODO: con probabilidad prob_mutation hacer mutacion
             cromosoma_2 = mutationSwap(cromosoma_2, len(drones))
 
-        #print('\n\n')
-        #print('madre', poblacion[index_padres[0]])
-        #print('padre', poblacion[index_padres[1]])
-        #print('hijo1', cromosoma_1)
-        #print('hijo2', cromosoma_2)
-        #print('\n\n')
-
         # Replacement
         madre, padre = replacementSteadyState(poblacion[index_padres[0]], poblacion[index_padres[1]], cromosoma_1, cromosoma_2, drones, nodos)
         poblacion[index_padres[0]] = madre
@@ -572,10 +568,10 @@ def GA (nodos, drones, n_iteraciones = 500, tam_poblacion = 100, perc_nearest_rr
 
         # Ver evolucion:
         if n_iteraciones % (iteracion + 1) == 0:
-            dibujarRutasCromosoma(nodos, drones, poblacion[np.argsort(-getFitness(poblacion, drones, nodos))[0]], show = False, 
-                                  ruta_guardar='./logs/prueba/cromosoma_ganador_{}.png'.format(iteracion + 1))
+            dibujarRutasCromosoma(nodos, drones, poblacion[np.argsort(getFitness(poblacion, drones, nodos))[0]], show = False, 
+                                  ruta_guardar='{}cromosoma_ganador_{}.png'.format(ruta_logs, iteracion + 1))
 
-    return poblacion[np.argsort(-getFitness(poblacion, drones, nodos))[0]]
+    return poblacion[np.argsort(getFitness(poblacion, drones, nodos))[0]]
 
     
 def main ():
@@ -590,9 +586,8 @@ def main ():
     for dron in drones:
         print("Dron", dron.id, "- posicion inicial ", dron.posicion_actual)
 
-    #cromosoma_ganador = GA(nodos, drones)
-    cromosoma_ganador = GA(nodos, drones, perc_nearest = 0, perc_nearest_rr = 0, perc_random=1)
-    #dibujarRutasCromosoma(nodos, drones, cromosoma_ganador, show = False, ruta_guardar='./img/cromosoma_ganador.png')
+    cromosoma_ganador = GA(nodos, drones)
+    dibujarRutasCromosoma(nodos, drones, cromosoma_ganador, show = False, ruta_guardar='{}cromosoma_ganador_final.png'.format(ruta_logs))
 
 
 if __name__ == '__main__':
