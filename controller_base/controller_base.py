@@ -306,13 +306,13 @@ def getCromosomaNearestNeighbour (nodos, drones, nbrs):
 
 def getCromosomaRandom (nodos, drones):
     cromosoma = list(nodos.keys())
-    np.random.shuffle(cromosoma)
+    np.random.shuffle(cromosoma) # Orden de ciudades aleatorio
     
     ciudades = [0]
-    while 0 in ciudades: # Asegurar que todos los UAVs van al menos a un nodo
-        ciudades = np.round(np.random.dirichlet(np.ones(len(drones)),size=1)*len(nodos)).astype(int)
+    while 0 in ciudades or sum(ciudades) != len(nodos): # Asegurar que a todos los UAVs se le asigna al menos a un nodo y que se repartan todas las ciudades
+        ciudades = np.round(np.random.dirichlet(np.ones(len(drones)),size=1)*len(nodos)).astype(int)[0]
 
-    for ciudad in ciudades[0]:
+    for ciudad in ciudades:
         cromosoma.append(ciudad)
 
     return cromosoma
@@ -417,14 +417,13 @@ def selectionRankRouletteWheel (fitness):
     return padres
 
 
-def crossoverTCX (padre, madre, n_drones):
+def crossoverTCX (madre, padre, n_drones):
     '''
     Madre/padre: [ciudad_1, ciudad_2, ..., ciudad_n, ciudades_dron_1, ..., ciudades_dron_m]
     Ciudades asignadas: [ciudades_dron_1, ..., ciudades_dron_m]
     Segmento: [ciudad_1, ciudad_2, ciudad_3] para ciudades_dron_1 = 3
     Gen: ciudad_i
     '''
-
     new_cromosoma = []
     genes_guardados = []
 
@@ -440,7 +439,7 @@ def crossoverTCX (padre, madre, n_drones):
         # Elegir posicion de inicio del sub-segmento:
         pos_incio_segmento = pos_inicio_segmento_actual
         if madre[m] > segmento[m]:
-            pos_incio_segmento += np.random.randint(1, madre[m] - segmento[m])
+            pos_incio_segmento += np.random.randint(0, madre[m] - segmento[m])
 
         # Guardar los genes del sub-segmento:
         for k in range(pos_incio_segmento, pos_incio_segmento + segmento[m]):
@@ -455,12 +454,12 @@ def crossoverTCX (padre, madre, n_drones):
     for gen in padre[:-n_drones]:
         if gen not in genes_guardados:
             genes_sin_guardar.append(gen)
-    
+
     indice_genes_sin_guardar = 0
     n_genes_sin_guardar = len(genes_sin_guardar) #len(madre[:-n_drones]) - len(genes_guardados)
     for m in range(-n_drones, 0): # Recorremos de -n_drones a -1 -> acceder a las posiciones de número de ciudades del cromosoma por orden
         if m != -1: # Si no es el ultimo dron
-            n_genes_dron_m = np.random.randint(1, n_genes_sin_guardar)
+            n_genes_dron_m = np.random.randint(0, n_genes_sin_guardar)
         else:
             n_genes_dron_m = n_genes_sin_guardar
 
@@ -502,12 +501,12 @@ def GA (nodos, drones, n_iteraciones = 500, tam_poblacion = 100, perc_nearest_rr
     # Selection:
     index_padres = selectionRankRouletteWheel (fitness)
 
+    print('madre: ', poblacion[index_padres[0]])
+    print('padre: ', poblacion[index_padres[1]])
+
     # Crossover
     cromosoma = crossoverTCX (poblacion[index_padres[0]], poblacion[index_padres[1]], len(drones))
 
-
-    print('madre: ', poblacion[index_padres[0]])
-    print('padre: ', poblacion[index_padres[1]])
     print('hijo: ', cromosoma)
 
 
