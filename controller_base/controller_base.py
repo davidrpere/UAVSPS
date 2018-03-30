@@ -19,26 +19,26 @@ northEast = [42.17226800508796, -8.678347434154489] #(latitud, longitud)
 southWest = [42.17112037162631, -8.679393394103954] #(latitud, longitud)
 southEast = [42.17112037162631, -8.678347434154489] #(latitud, longitud)
 
-
-
 posicion_base = [0,0] # TODO: obtener
-
-
 
 '''
 SUPOSICIONES:
 - Las cámaras de los drones tienen las mismas características y están posicionadas con el mismo ángulo de inclinación.
 - Los drones vuelan a la misma altura y velocidad.
-- Todos los drones que participan en la misión son lanzados desde la base.
-
 
 VERSION 0:
 - A mayores, para una primera versión no se va a considerar la orientación del dron para tomar las imagenes porque se 
     supone que van a estar orientadas hacia el suelo.
+- Todos los drones que participan en la misión son lanzados desde la base.
 - Por como están diseñadas las conexiones del grafo los movimientos de un nodo a otro son solo en un eje (x ò y).
+
+VERSION 1:
+- Las camaras tienen un grado de inclinación, es necesario orientar al dron para sacar la foto.
+- La posición inicial de los drones no tiene porque ser la base.
+- El movimiento de los drones no está limitado a un eje.
 '''
 
-def getMeters(geoCoordA, geoCoordB):
+def getMeters (geoCoordA, geoCoordB):
     '''    
     Calcula la distancia en metros entre dos coordenadas geográficas.
 
@@ -52,7 +52,7 @@ def getMeters(geoCoordA, geoCoordB):
     return distance.vincenty(geoCoordA,geoCoordB).meters
 
 
-def cartToGeoCoord(x_meters, y_meters, origenCoordGeo):
+def cartToGeoCoord (x_meters, y_meters, origenCoordGeo):
     '''
     Convierte coordenadas cartesianas a coordenadas geométricas
 
@@ -217,7 +217,7 @@ def dibujarNodosEnImagen (grafo, x, y, ruta_img = './area.png', size = 9):
     return grid, old_min, old_max, new_min, new_max
 
 
-def calcularDivisiones(lado, footprint, fraccion_solape):
+def calcularDivisiones (lado, footprint, fraccion_solape):
     '''
     '''
      
@@ -330,7 +330,6 @@ def getDistanciaRecorridaCromosoma (cromosoma, posicion_inicial_drones, nodos):
 
     fitness = 0
     for i, posicion_actual_dron in enumerate(posicion_inicial_drones):
-        
         distancia_recorrida_dron = 0
         for ciudad in ciudades_dron[i]:
             distancia_recorrida_dron += distancia(posicion_actual_dron, nodos[ciudad])
@@ -341,10 +340,14 @@ def getDistanciaRecorridaCromosoma (cromosoma, posicion_inicial_drones, nodos):
     return fitness
 
 
-def dibujarRutasCromosoma(nodos, drones, cromosoma):
+def dibujarRutasCromosoma (nodos, drones, cromosoma, show = True, ruta_guardar = None):
     '''
     '''
+
     grid = dibujarNodos(nodos, aspect = max(np.array(list(nodos.values()))[:,0]) / max(np.array(list(nodos.values()))[:,1]))
+
+    grid.fig.suptitle(str(cromosoma), fontsize=8) # TODO:cambio
+
     n_drones = len(drones)
     ultimo_indice = 0
     for i, dron in enumerate(drones):
@@ -360,7 +363,12 @@ def dibujarRutasCromosoma(nodos, drones, cromosoma):
         
         ultimo_indice += n_ciudades
 
-    plt.show()
+    if ruta_guardar is not None:
+        plt.savefig(ruta_guardar)
+    
+    if show:
+        plt.show()
+
     plt.clf()
 
 
@@ -401,7 +409,7 @@ def selectionRankRouletteWheel (fitness):
     n = len(fitness)
     sum_rank = n * (n + 1) / 2 # Fórmula de Gauss para obtener la suma de todos los rankings (suma de enteros de 1 a N):
 
-    probs_ruleta =  (1 + np.argsort(fitness)) / sum_rank
+    probs_ruleta =  (1 + np.argsort(-fitness)) / sum_rank
     
     padres = []
     while len(padres) != 2:
@@ -434,7 +442,8 @@ def crossoverTCX (madre, padre, n_drones):
     pos_inicio_segmento_actual = 0
     for m in range(-n_drones, 0): # Recorremos de -n_drones a -1 -> acceder a las posiciones de número de ciudades del cromosoma por orden
         # Tamaño sub-segmento = número aleatorio entre 1 y el número de ciudades asignadas para el dron m:
-        segmento[m] = np.random.randint(1, madre[m]) 
+        if madre[m] != 1:
+            segmento[m] = np.random.randint(1, madre[m]) 
 
         # Elegir posicion de inicio del sub-segmento:
         pos_incio_segmento = pos_inicio_segmento_actual
@@ -483,44 +492,92 @@ def crossoverTCX (madre, padre, n_drones):
     return hijo
 
 
+def mutationSwap (cromosoma, n_drones):
+    '''
+    Cambia las posiciones de dos genes seleccionados aleatoriamente en ambas partes del cromosoma (por separado).
+    '''
+    # Swap de dos posiciones aleatorias de la primera parte del cromosoma (lista de ciudades):
+    pos_ciudades_1 = pos_ciudades_2 = np.random.randint(0, len(cromosoma[:-n_drones]))
+    while pos_ciudades_2 == pos_ciudades_1:
+        pos_ciudades_2 = np.random.randint(0, len(cromosoma[:-n_drones]))
+
+    ciudad_1 = cromosoma[pos_ciudades_1]
+    ciudad_2 = cromosoma[pos_ciudades_2]
+
+    cromosoma[pos_ciudades_1] = ciudad_2
+    cromosoma[pos_ciudades_2] = ciudad_1
+
+    # Swap de dos posiciones aleatorias de la segunda parte del cromosoma (num de ciudades asignadas):
+    pos_segmento_1 = pos_segmento_2 = np.random.randint(len(cromosoma[:-n_drones]) + 1, len(cromosoma))
+    while pos_segmento_2 == pos_segmento_1:
+        pos_segmento_2 = np.random.randint(len(cromosoma[:-n_drones]) + 1, len(cromosoma))
+
+    segmento_1 = cromosoma[pos_segmento_1]
+    segmento_2 = cromosoma[pos_segmento_2]
+
+    cromosoma[pos_segmento_1] = segmento_2
+    cromosoma[pos_segmento_2] = segmento_1
+
+    return cromosoma
+
+
+def replacementSteadyState (parent_1, parent_2, child_1, child_2, drones, nodos):
+    '''
+    Se seleccionan los 2 cromosomas con mayor fitness de entre los padres e hijos.
+    '''
+    poblacion_cromosomas = [parent_1, parent_2, child_1, child_2]
+    indices_mayor_menor = np.argsort(-getFitness(poblacion_cromosomas, drones, nodos))
+
+    return poblacion_cromosomas[0], poblacion_cromosomas[1]
+
+
 def GA (nodos, drones, n_iteraciones = 500, tam_poblacion = 100, perc_nearest_rr= 0.4, perc_nearest = 0.4, perc_random = 0.2, prob_crossover = 0.85, prob_mutation = 0.01):
 
-    nbrs = NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values()))
+    dir_logs = '{},{},{},{},{},{},{}'.format(n_iteraciones, tam_poblacion, perc_nearest_rr, perc_nearest, perc_random, prob_crossover, prob_mutation)
 
     # Poblacion inicial:
+    nbrs = NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values()))
     poblacion = [getCromosomaRandom(nodos, drones) for i in range(int(tam_poblacion*perc_random))]
     poblacion += [getCromosomaNearestNeighbourRR(nodos, drones, nbrs) for i in range(int(tam_poblacion*perc_nearest_rr))]
     poblacion += [getCromosomaNearestNeighbour(nodos, drones, nbrs) for i in range(int(tam_poblacion*perc_nearest))]
     np.random.shuffle(poblacion)
-
-    # TODO: bucle n_iteraciones
-
-    # Fitness:
-    fitness = getFitness(poblacion, drones, nodos)
-
-    # Selection:
-    index_padres = selectionRankRouletteWheel (fitness)
-
-    print('madre: ', poblacion[index_padres[0]])
-    print('padre: ', poblacion[index_padres[1]])
-
-    # Crossover
-    cromosoma = crossoverTCX (poblacion[index_padres[0]], poblacion[index_padres[1]], len(drones))
-
-    print('hijo: ', cromosoma)
-
-
-    # Mutacion
-    # TODO: con probabilidad prob_mutation hacer mutacion
     
+    for iteracion in range(n_iteraciones): # TODO: añadir condicion de parar si fitness >= ____
+        # Fitness:
+        fitness = getFitness(poblacion, drones, nodos)
 
+        # Selection:
+        index_padres = selectionRankRouletteWheel (fitness)
+    
+        # Crossover y/o mutacion: # TODO: añadir prob cross
+        cromosoma_1 = crossoverTCX (poblacion[index_padres[0]], poblacion[index_padres[1]], len(drones))
+        if prob_mutation >= np.random.random(): # TODO: con probabilidad prob_mutation hacer mutacion
+            cromosoma_1 = mutationSwap(cromosoma_1, len(drones))
 
+        cromosoma_2 = crossoverTCX (poblacion[index_padres[1]], poblacion[index_padres[0]], len(drones))
+        if prob_mutation >= np.random.random(): # TODO: con probabilidad prob_mutation hacer mutacion
+            cromosoma_2 = mutationSwap(cromosoma_2, len(drones))
 
+        #print('\n\n')
+        #print('madre', poblacion[index_padres[0]])
+        #print('padre', poblacion[index_padres[1]])
+        #print('hijo1', cromosoma_1)
+        #print('hijo2', cromosoma_2)
+        #print('\n\n')
+
+        # Replacement
+        madre, padre = replacementSteadyState(poblacion[index_padres[0]], poblacion[index_padres[1]], cromosoma_1, cromosoma_2, drones, nodos)
+        poblacion[index_padres[0]] = madre
+        poblacion[index_padres[1]] = padre
+
+        # Ver evolucion:
+        if n_iteraciones % (iteracion + 1) == 0:
+            dibujarRutasCromosoma(nodos, drones, poblacion[np.argsort(-getFitness(poblacion, drones, nodos))[0]], show = False, 
+                                  ruta_guardar='./logs/prueba/cromosoma_ganador_{}.png'.format(iteracion + 1))
+
+    return poblacion[np.argsort(-getFitness(poblacion, drones, nodos))[0]]
 
     
-
-
-
 def main ():
     nodos = getNodosGrafo()
 
@@ -533,15 +590,9 @@ def main ():
     for dron in drones:
         print("Dron", dron.id, "- posicion inicial ", dron.posicion_actual)
 
-    GA(nodos, drones)
-
-
-
-
-    #cromosoma =  getCromosomaNearestNeighbour (nodos, drones, NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values())))
-    #print(cromosoma)
-    #dibujarRutasCromosoma(nodos, drones,cromosoma)
-
+    #cromosoma_ganador = GA(nodos, drones)
+    cromosoma_ganador = GA(nodos, drones, perc_nearest = 0, perc_nearest_rr = 0, perc_random=1)
+    #dibujarRutasCromosoma(nodos, drones, cromosoma_ganador, show = False, ruta_guardar='./img/cromosoma_ganador.png')
 
 
 if __name__ == '__main__':
