@@ -446,8 +446,10 @@ def selectionRankRouletteWheel (fitness):
     n = len(fitness)
     sum_rank = n * (n + 1) / 2 # Fórmula de Gauss para obtener la suma de todos los rankings (suma de enteros de 1 a N):
 
-    probs_ruleta =  (1 + np.argsort(np.array(fitness))) / sum_rank # TODO -> comprobar probs bien asignadas
-    
+    probs_ruleta = [-1 for _ in range (len(fitness))]
+    for ranking, index_ruleta in enumerate(np.argsort(np.array(fitness))):
+        probs_ruleta[index_ruleta] = (n - ranking) / sum_rank
+
     padres = []
     while len(padres) != 2:
         p = np.random.uniform()
@@ -563,7 +565,8 @@ def replacementSteadyState (parent_1, parent_2, child_1, child_2, drones, nodos)
     Se seleccionan los 2 cromosomas con mayor fitness de entre los padres e hijos.
     '''
     poblacion_cromosomas = [parent_1, parent_2, child_1, child_2]
-    indices_mejor_a_peor = np.argsort(np.array(getFitnessPoblacion(poblacion_cromosomas, drones, nodos)))
+    fitness_poblacion = getFitnessPoblacion(poblacion_cromosomas, drones, nodos)
+    indices_mejor_a_peor = np.argsort(np.array(fitness_poblacion))
 
     return poblacion_cromosomas[indices_mejor_a_peor[0]], poblacion_cromosomas[indices_mejor_a_peor[1]]
 
@@ -594,6 +597,7 @@ def GA (nodos, drones, n_iteraciones = 5000, tam_poblacion = 100, perc_nearest_r
 
         # Selection:
         index_madre, index_padre = selectionRankRouletteWheel (fitness)
+        #index_madre, index_padre = selectionRouletteWheel(fitness)
 
         # Crossover y/o mutacion: # TODO: añadir prob cross
         hijo_1 = crossoverTCX (poblacion[index_madre], poblacion[index_padre], len(drones))
@@ -638,7 +642,9 @@ def main ():
               UAV (2, caracteristicas_sensor, [0.,0.], color='b', style='--'),
               UAV (3, caracteristicas_sensor, [0.,0.], color='y', style='--')]
 
-    cromosoma_ganador, fitness = GA(nodos, drones, perc_nearest_rr = 0.01, perc_nearest = 0.01, perc_random=0.98, n_iteraciones = 99999999999,limite_iteraciones_sin_cambio = 99999999999)   
+    cromosoma_ganador, fitness = GA(nodos, drones, tam_poblacion = 20,
+                                    perc_nearest_rr = 0.05, perc_nearest = 0.05, perc_random=0.90, 
+                                    n_iteraciones = 99999999999,limite_iteraciones_sin_cambio = 99999999999)   
     #cromosoma_ganador = GA(nodos, drones)
     dibujarRutasFitnessCromosoma(nodos, drones, cromosoma_ganador, fitness, show = False, ruta_guardar='{}cromosoma_ganador_final.png'.format(ruta_logs))
 
