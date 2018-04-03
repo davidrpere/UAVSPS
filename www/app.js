@@ -1,38 +1,19 @@
-var http = require("http");
-var url = require('url');
-var fs = require('fs');
-var count = 0;
+var express = require('express');
+var app = express();
+var zmq = require('zeromq');
+var http = require('http');
+var server = http.createServer(app);
+var io  = require('socket.io').listen(server)
+var path = require("path");
 
-var server = http.createServer(function(request, response){
-  var path = url.parse(request.url).pathname;
+var dashboard = require('./routes/dashboard')(io,__dirname);
 
-  switch(path){
-    case '/':
-    response.writeHead(200, {'Content-Type': 'text/html'});
-    response.write('<h1>Hey, have you heard about our <a href="/signup.html">signup page</a></h1>');
-    response.end();
-    break;
+app.set('views', path.join(__dirname, 'views'));
+app.use('/', dashboard);
+app.use('/dashboard', dashboard);
 
-    default:
-    response.writeHead(404);
-    response.write("opps this doesn't exist - 404");
-    response.end();
-    break;
-  }
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
 });
-server.listen(8000);
 
-// define interactions with client
-var io = require('socket.io').listen(server);
-io.sockets.on('connection', function(socket){
-    //send data to client
-    setInterval(function(){
-        count = count + 1;
-        if (count == 5) {
-          socket.emit('stream', {'title': "Valor contador: " + count , 'seen' : false});
-        }else{
-          socket.emit('stream', {'title': "Valor contador: " + count , 'seen' : true});
-        }
-    }, 1000);
-
-});
+module.exports = app;

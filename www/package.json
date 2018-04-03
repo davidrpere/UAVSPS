@@ -1,26 +1,16 @@
 {
-  "name": "uavsps",
+  "name": "www",
   "version": "1.0.0",
   "description": "proyecto lpro",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/davidrpere/UAVSPS.git"
-  },
-  "keywords": [
-    "uav"
-  ],
-  "author": "UAVSPS TEAM",
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/davidrpere/UAVSPS/issues"
-  },
-  "homepage": "https://github.com/davidrpere/UAVSPS#readme",
   "dependencies": {
     "express": "^4.16.3",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.0.4",
+    "zeromq": "^4.6.0"
   }
 }
