@@ -2,98 +2,138 @@
 <html>
 
 <head>
-    <title>HORUS</title>
-    <meta charset="utf-8">
+  <title>HORUS</title>
+  <meta charset="utf-8">
 
-    <!-- Bootstrap 4.0 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <!-- Bootstrap 4.0 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-    <!-- Google maps -->
-    <link rel="stylesheet" type="text/css" href="../public/stylesheets/dashboard.css" />
-    <script src="../public/javascript/google_maps.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD70tPAmyyOvL1GnSQY8y3w8SU2CY8ZP9Q&callback=initMap">
-    </script>
+  <!-- Google maps -->
+  <link rel="stylesheet" type="text/css" href="../public/stylesheets/dashboard.css" />
+  <script src="../public/javascript/google_maps.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD70tPAmyyOvL1GnSQY8y3w8SU2CY8ZP9Q&callback=initMap">
+  </script>
 
-    <!-- CSS -->
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
+  <!-- CSS -->
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
 
-        .container-fluid {
-            height: 85%;
-        }
+    .container-fluid {
+      height: 85%;
+    }
 
-        #map,
-        .row_map {
-            height: 100%;
-        }
+    #map,
+    .row_map {
+      height: 100%;
+    }
 
-        .row_btn {
-            margin-top: 1%;
-            padding-left: 30%;
-            padding-right: 30%;
-        }
-
-    </style>
+    .row_btn {
+      margin-top: 1%;
+      padding-left: 30%;
+      padding-right: 30%;
+    }
+  </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">HORUS</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">HORUS</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#"> Historial<span class="sr-only"></span></a>
-                </li>
-            </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Zona de interés" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
-            </form>
-        </div>
-    </nav>
-    <div class="container-fluid">
-        <div class="row row_map">
-            <div class="col">
-                <div class="row d-flex flex-column h-100">
-                    <div id="map"></div>
-                </div>
-            </div>
-        </div>
-        <div class="row row_btn">
-            <div class="col">
-                <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#exampleModalCenter">Configurar misión</button>
-            </div>
-        </div>
-        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Configuración de la misión</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                            </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Modal body text goes here.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="button" class="btn btn-primary">Continuar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#"> Historial<span class="sr-only"></span></a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Zona de interés" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+      </form>
     </div>
+  </nav>
+  <div class="container-fluid">
+    <div class="row row_map">
+      <div class="col">
+        <div class="row d-flex flex-column h-100">
+          <div id="map"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row row_btn">
+      <div class="col">
+        <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#modalCenter">Configurar misión</button>
+      </div>
+    </div>
+    <div class="modal fade" id="modalCenter" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Configuración de la misión</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <input type="text" class="form-control" id="nombre_mision" placeholder="Nombre de la misión">
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <label class="input-group-text" for="tipo_mision">Tipo de misión</label>
+                </div>
+                <select class="custom-select" id="tipo_mision">
+                  <option value="1">Monitorización</option>
+                  <option value="2">Búsqueda de personas</option>
+                </select>
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <label class="input-group-text" for="altura_vuelo">Altura de vuelo</label>
+                </div>
+                <select class="custom-select" id="altura_vuelo">
+                  <option value="1">1 m.</option>
+                  <option value="2">2 m.</option>
+                  <option value="3">3 m.</option>
+                  <option value="4">4 m.</option>
+                  <option value="5">5 m.</option>
+                  <option value="6">6 m.</option>
+                  <option value="7">7 m.</option>
+                  <option value="8">8 m.</option>
+                  <option value="9">9 m.</option>
+                  <option value="10">10 m.</option>
+                </select>
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <label class="input-group-text" for="numero_drones">Número de drones</label>
+                </div>
+                <select class="custom-select" id="numero_drones">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary">Continuar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
