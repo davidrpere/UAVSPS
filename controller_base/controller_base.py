@@ -371,7 +371,9 @@ def getFitnessCromosoma (cromosoma, posicion_inicial_drones, nodos):
             posicion_actual_dron = nodos[ciudad]
         distancias_recorridas_drones.append(distancia_recorrida_dron)
 
-    return 2* max(distancias_recorridas_drones) + np.mean(distancias_recorridas_drones) #+ max(distancias_recorridas_drones) / np.mean(distancias_recorridas_drones) # Se suma fator para tener en cuenta también los recorridos de los otros drones
+    #return max(distancias_recorridas_drones) + np.mean(distancias_recorridas_drones) / 2
+    #return max(distancias_recorridas_drones) * np.mean(distancias_recorridas_drones)
+    return np.sum(distancias_recorridas_drones)
 
 
 def dibujarRutasFitnessCromosoma (nodos, drones, cromosoma, fitness, show = True, ruta_guardar = None):
@@ -594,7 +596,7 @@ def replacementSteadyState (parent_1, parent_2, child_1, child_2, drones, nodos)
 
 
 def GA (nodos, drones, n_generaciones = 5000, tam_poblacion = 100, perc_nearest_rr= 0.4, perc_nearest = 0.4, 
-        perc_random = 0.2, prob_crossover = 0.85, prob_mutation = 0.01, limite_generaciones_sin_cambio = 1000):
+        perc_random = 0.2, prob_crossover = 0.95, prob_mutation = 0.01, limite_generaciones_sin_cambio = 1000):
 
     dir_logs = '{},{},{},{},{},{},{}'.format(n_generaciones, tam_poblacion, perc_nearest_rr, perc_nearest, perc_random, prob_crossover, prob_mutation)
     best_cromosoma = None
@@ -680,21 +682,27 @@ def asignarPosicionInicialGrafo (nodos, drones):
     return drones
 
 
+def getCromosomaNNmins (): #TODO -> como asignarPosicionInicialGrafo
+    pass
+
+
 def main ():
     if not os.path.isdir(ruta_logs):
         os.makedirs(ruta_logs)
 
     nodos = getNodosGrafo()
 
-    drones = [UAV (0, caracteristicas_sensor, [0.,0.], color='m', style='--'), 
-              UAV (1, caracteristicas_sensor, [0.,0.], color='g', style='--'),
-              UAV (2, caracteristicas_sensor, [0.,0.], color='b', style='--'),
-              UAV (3, caracteristicas_sensor, [0.,0.], color='y', style='--')]
+    #base = [0.,0.]
+    base = [70, 130]
+    drones = [UAV (0, caracteristicas_sensor, base, color='m', style='--'), 
+              UAV (1, caracteristicas_sensor, base, color='g', style='--'),
+              UAV (2, caracteristicas_sensor, base, color='b', style='--'),
+              UAV (3, caracteristicas_sensor, base, color='y', style='--')]
 
     drones = asignarPosicionInicialGrafo (nodos, drones)
 
-    cromosoma_ganador, fitness = GA(nodos, drones, tam_poblacion = 40,
-                                    perc_nearest_rr = 0.25, perc_nearest = 0.25, perc_random=0.50, 
+    cromosoma_ganador, fitness = GA(nodos, drones, tam_poblacion = 1000,
+                                    perc_nearest_rr = 0.005, perc_nearest = 0.005, perc_random=0.99, 
                                     n_generaciones = 99999999999, limite_generaciones_sin_cambio = 1500)   
     #cromosoma_ganador = GA(nodos, drones)
     #dibujarRutasFitnessCromosoma(nodos, drones, cromosoma_ganador, fitness, show = False, ruta_guardar='{}cromosoma_ganador_final.png'.format(ruta_logs))
