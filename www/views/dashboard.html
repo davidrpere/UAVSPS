@@ -11,56 +11,37 @@
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
   <!-- Google maps -->
   <link rel="stylesheet" type="text/css" href="../public/stylesheets/dashboard.css" />
   <script src="../public/javascript/google_maps.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD70tPAmyyOvL1GnSQY8y3w8SU2CY8ZP9Q&callback=initMap">
-  </script>
-
-  <!-- CSS -->
-  <style>
-    html,
-    body {
-      height: 100%;
-    }
-
-    .container-fluid {
-      height: 85%;
-    }
-
-    #map,
-    .row_map {
-      height: 100%;
-    }
-
-    .row_btn {
-      margin-top: 1%;
-      padding-left: 30%;
-      padding-right: 30%;
-    }
-  </style>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD70tPAmyyOvL1GnSQY8y3w8SU2CY8ZP9Q&callback=initMap"></script>
 </head>
 
 <body>
+  <!-- Alerta por no introducir el nombre de la mision -->
+  <div v-if="seen" class="alert alert-danger" role="alert" id="alert_name_mision">
+    <span>¡Debe introducir un nombre para la misión!</span>
+  </div>
+
+  <!-- Barra de navegacion -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">HORUS</a>
+    <a class="navbar-brand">HORUS</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+      <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
           <a class="nav-link" href="#"> Historial<span class="sr-only"></span></a>
         </li>
       </ul>
-      <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Zona de interés" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
-      </form>
     </div>
   </nav>
+  <!-- Contenido de la pagina web-->
   <div class="container-fluid">
+    <!-- Mapa de Google Maps-->
     <div class="row row_map">
       <div class="col">
         <div class="row d-flex flex-column h-100">
@@ -68,11 +49,28 @@
         </div>
       </div>
     </div>
-    <div class="row row_btn">
+    <!-- Boton para configurar la mision-->
+    <div v-if="seen" class="row row_btn" id="btnSetMission">
       <div class="col">
-        <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#modalCenter">Configurar misión</button>
+        <button type="button" class="btn btn-secondary btn-block" data-toggle="modal" data-target="#modalCenter">Configurar misión</button>
       </div>
     </div>
+
+    <!-- añadir/borrar area a la mision -->
+    <div v-if="seen" class="row row_btn" id="btnArea">
+      <div class="col">
+        <button type="button" class="btn bg-secondary btn-block" v-on:click="add_area">Añadir area</button>
+      </div>
+      <div class="col">
+        <button type="button" class="btn bg-secondary btn-block" v-on:click="remove_area">Quitar area</button>
+      </div>
+
+      <div class="col">
+        <button type="button" class="btn bg-success btn-block" v-on:click="start_mission">Comenzar misión</button>
+      </div>
+    </div>
+
+    <!-- Modal Bootstrap 4.0-->
     <div class="modal fade" id="modalCenter" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -83,24 +81,27 @@
             </button>
           </div>
           <div class="modal-body">
+            <!-- Formulario para establecer los parametros de la mision -->
             <form>
               <div class="form-group">
-                <input type="text" class="form-control" id="nombre_mision" placeholder="Nombre de la misión">
+                <input type="text" class="form-control" id="nombre_mision" placeholder="Nombre de la misión" name="nombre_mision" v-on:click="hide_alert_name_mision">
               </div>
+
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
                   <label class="input-group-text" for="tipo_mision">Tipo de misión</label>
                 </div>
-                <select class="custom-select" id="tipo_mision">
+                <select class="custom-select" id="tipo_mision" name="tipo_mision">
                   <option value="1">Monitorización</option>
                   <option value="2">Búsqueda de personas</option>
                 </select>
               </div>
+
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
                   <label class="input-group-text" for="altura_vuelo">Altura de vuelo</label>
                 </div>
-                <select class="custom-select" id="altura_vuelo">
+                <select class="custom-select" id="altura_vuelo" name="altura_vuelo">
                   <option value="1">1 m.</option>
                   <option value="2">2 m.</option>
                   <option value="3">3 m.</option>
@@ -117,7 +118,18 @@
                 <div class="input-group-prepend">
                   <label class="input-group-text" for="numero_drones">Número de drones</label>
                 </div>
-                <select class="custom-select" id="numero_drones">
+                <select class="custom-select" id="numero_drones" name="numero_drones">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <label class="input-group-text" for="solapamiento">Solapamiento entre fotos</label>
+                </div>
+                <select class="custom-select" id="solapamiento" name="solapamiento">
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
@@ -127,13 +139,86 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-primary">Continuar</button>
+            <button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal" v-on:click="hide_alert_name_mision">Cerrar</button>
+            <button type="button" class="btn btn-primary" id="btnContinue" v-on:click="getData">Continuar</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    var params;
+
+    var btnContinue = new Vue({
+      el: '#btnContinue',
+      methods: {
+        getData: function() {
+          if (!$("#nombre_mision").val()) {
+            alert_name_mision.seen = true
+          } else {
+            params = $("form").serializeArray()
+            $('#modalCenter').modal('toggle')
+            btnSetMission.seen = false
+            btnArea.seen = true
+          }
+        }
+      }
+    })
+
+    var btnClose = new Vue({
+      el: "#btnClose",
+      methods: {
+        hide_alert_name_mision: function() {
+          alert_name_mision.seen = false
+        }
+      }
+    })
+
+    var btnSetMission = new Vue({
+      el: "#btnSetMission",
+      data: {
+        seen: true
+      }
+    })
+
+    var btnArea = new Vue({
+      el: "#btnArea",
+      data: {
+        seen: false
+      },
+      methods: {
+        add_area: function () {
+          add_area();
+        },
+        remove_area: function () {
+          remove_area();
+        },
+        start_mission: function () {
+          var coordinates = getCoordinates()
+
+          console.log(coordinates);
+          console.log(params)
+        }
+      }
+    })
+
+    var name_mission = new Vue({
+      el: "#nombre_mision",
+      methods: {
+        hide_alert_name_mision: function() {
+          alert_name_mision.seen = false
+        }
+      }
+    })
+
+    var alert_name_mision = new Vue({
+      el: '#alert_name_mision',
+      data: {
+        seen: false
+      }
+    })
+  </script>
 </body>
 
 </html>
