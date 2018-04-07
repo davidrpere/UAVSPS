@@ -7,6 +7,7 @@ class UAV ():
     def __init__(self, id, caracteristicas_sensor, posicion_lanzamiento, color='k', style='--'):
         self.id = id
         self.caracteristicas_sensor = caracteristicas_sensor
+        self.posicion_lanzamiento = posicion_lanzamiento
         self.posicion_actual = posicion_lanzamiento
         self.enmovimiento = False
         self.color = color

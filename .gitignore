@@ -27,3 +27,6 @@ build
 *.pyproj
 __pycache__
 .vs
+
+controller_base/logs*
+controller_base/Ejemplos
