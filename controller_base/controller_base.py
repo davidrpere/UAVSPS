@@ -8,7 +8,10 @@ import threading
 from time import sleep
 from sklearn.neighbors import NearestNeighbors
 import os
+<<<<<<< HEAD
 from datetime import datetime
+=======
+>>>>>>> d5785e1f2614ca55f85e100fb723bf1fe6432fe8
 
 
 altura_vuelo_uav = 20
@@ -364,6 +367,7 @@ def getFitnessCromosoma (nodos, cromosoma, contar_pos_inicial_en_fitness, posici
         last_index += n_ciudades_dron
 
     distancias_recorridas_drones = []
+<<<<<<< HEAD
     if contar_pos_inicial_en_fitness:
         for i, posicion_actual_dron in enumerate(posicion_inicial_drones):
             distancia_recorrida_dron = 0
@@ -381,6 +385,18 @@ def getFitnessCromosoma (nodos, cromosoma, contar_pos_inicial_en_fitness, posici
             distancias_recorridas_drones.append(distancia_recorrida_dron)
 
     return np.max(distancias_recorridas_drones) + np.sum(distancias_recorridas_drones)
+=======
+    for i, posicion_actual_dron in enumerate(posicion_inicial_drones):
+        distancia_recorrida_dron = 0
+        for ciudad in ciudades_dron[i]:
+            distancia_recorrida_dron += distancia(posicion_actual_dron, nodos[ciudad])
+            posicion_actual_dron = nodos[ciudad]
+        distancias_recorridas_drones.append(distancia_recorrida_dron)
+
+    #return max(distancias_recorridas_drones) + np.mean(distancias_recorridas_drones) / 2
+    #return max(distancias_recorridas_drones) * np.mean(distancias_recorridas_drones)
+    return np.sum(distancias_recorridas_drones)
+>>>>>>> d5785e1f2614ca55f85e100fb723bf1fe6432fe8
 
 
 def dibujarRutasFitnessCromosoma (nodos, drones, cromosoma, fitness, show = True, ruta_guardar = None):
@@ -591,6 +607,7 @@ def replacementSteadyState (parent_1, parent_2, child_1, child_2, drones, nodos,
 
     return resultado
 
+<<<<<<< HEAD
 
 def GA (nodos, drones, ruta_logs, n_generaciones = 5000, n_nearest_rr = 5, n_nearest = 5, n_random = 1000 , 
         prob_crossover = 0.95, prob_mutation = 0.01, limite_generaciones_sin_cambio = 1000, contar_pos_inicial_en_fitness = True):
@@ -620,6 +637,12 @@ def GA (nodos, drones, ruta_logs, n_generaciones = 5000, n_nearest_rr = 5, n_nea
         Si True se tiene en cuenta la distancia de la posicion inicial de 
         los UAVs para el calculo del fitness.
     '''
+=======
+def GA (nodos, drones, n_generaciones = 5000, tam_poblacion = 100, perc_nearest_rr= 0.4, perc_nearest = 0.4, 
+        perc_random = 0.2, prob_crossover = 0.95, prob_mutation = 0.01, limite_generaciones_sin_cambio = 1000):
+
+    dir_logs = '{},{},{},{},{},{},{}'.format(n_generaciones, tam_poblacion, perc_nearest_rr, perc_nearest, perc_random, prob_crossover, prob_mutation)
+>>>>>>> d5785e1f2614ca55f85e100fb723bf1fe6432fe8
     best_cromosoma = None
     fitness_medio = 0
     generaciones_sin_cambio = 0
@@ -653,7 +676,11 @@ def GA (nodos, drones, ruta_logs, n_generaciones = 5000, n_nearest_rr = 5, n_nea
                 cromosoma_hijo_2 = mutationSwap(cromosoma_hijo_2, len(drones))
 
             # Replacement:
+<<<<<<< HEAD
             madre, padre = replacementSteadyState(poblacion[index_madre], poblacion[index_padre], cromosoma_hijo_1, cromosoma_hijo_2, drones, nodos, contar_pos_inicial_en_fitness)
+=======
+            madre, padre = replacementSteadyState(poblacion[index_madre], poblacion[index_padre], cromosoma_hijo_1, cromosoma_hijo_2, drones, nodos)
+>>>>>>> d5785e1f2614ca55f85e100fb723bf1fe6432fe8
             poblacion[index_madre] = madre
             poblacion[index_padre] = padre
 
@@ -678,9 +705,12 @@ def GA (nodos, drones, ruta_logs, n_generaciones = 5000, n_nearest_rr = 5, n_nea
 
 
 def asignarPosicionInicialGrafo (nodos, drones):
+<<<<<<< HEAD
     '''
     Asigna como posicion inicial de los drones el nodo mas cercano mediante "RoundRobin"
     '''
+=======
+>>>>>>> d5785e1f2614ca55f85e100fb723bf1fe6432fe8
     nbrs = NearestNeighbors(n_neighbors=len(nodos), algorithm='auto').fit(list(nodos.values()))
 
     vecinos = np.array([nbrs.kneighbors([dron.posicion_actual]) for dron in drones])
@@ -706,6 +736,7 @@ def asignarPosicionInicialGrafo (nodos, drones):
     return drones
 
 
+<<<<<<< HEAD
 def getCromosomaNnRrMins (nodos, drones, nbrs): #TODO -> como asignarPosicionInicialGrafo
     distancias = vecinos[:,0]
     indices = vecinos[:,1]
@@ -726,9 +757,16 @@ def getCromosomaNnRrMins (nodos, drones, nbrs): #TODO -> como asignarPosicionIni
                         posiciones_ya_asignadas.append(indice)
                         break
                 break
+=======
+def getCromosomaNNmins (): #TODO -> como asignarPosicionInicialGrafo
+    pass
+>>>>>>> d5785e1f2614ca55f85e100fb723bf1fe6432fe8
 
 
 def main ():
+    if not os.path.isdir(ruta_logs):
+        os.makedirs(ruta_logs)
+
     nodos = getNodosGrafo()
 
     #base = [0.,0.]
@@ -738,6 +776,7 @@ def main ():
               UAV (2, caracteristicas_sensor, base, color='b', style='--'),
               UAV (3, caracteristicas_sensor, base, color='y', style='--')]
 
+<<<<<<< HEAD
     #drones = asignarPosicionInicialGrafo (nodos, drones) # Asigna como posicion inicial de los drones el nodo mas cercano mediante RoundRobin
 
     combinaciones = [
@@ -781,6 +820,15 @@ def main ():
         with open(ruta_logs + 'duracion.txt', 'w') as f:
             f.write('Segundos: {}\n'.format(duracion))
             f.write('Minutos: {}\n'.format(duracion/60))
+=======
+    drones = asignarPosicionInicialGrafo (nodos, drones)
+
+    cromosoma_ganador, fitness = GA(nodos, drones, tam_poblacion = 1000,
+                                    perc_nearest_rr = 0.005, perc_nearest = 0.005, perc_random=0.99, 
+                                    n_generaciones = 99999999999, limite_generaciones_sin_cambio = 1500)   
+    #cromosoma_ganador = GA(nodos, drones)
+    #dibujarRutasFitnessCromosoma(nodos, drones, cromosoma_ganador, fitness, show = False, ruta_guardar='{}cromosoma_ganador_final.png'.format(ruta_logs))
+>>>>>>> d5785e1f2614ca55f85e100fb723bf1fe6432fe8
 
 
 if __name__ == '__main__':
