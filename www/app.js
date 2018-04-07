@@ -1,19 +1,31 @@
 var express = require('express');
 var app = express();
-var zmq = require('zeromq');
-var http = require('http');
-var server = http.createServer(app);
-var io  = require('socket.io').listen(server)
 var path = require("path");
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 
-var dashboard = require('./routes/dashboard')(io,__dirname);
+//Router
+var dashboardRouter = require('./routes/dashboard');
 
+// view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.use('/', dashboard);
-app.use('/dashboard', dashboard);
+app.set('view engine', 'pug');
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+app.use(logger('dev'));
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', dashboardRouter);
+
+server.listen(3000);
+
+io.on('connection', function (socket) {
+    socket.on('empezar_mision', function (data) {
+        console.log(data);
+    });
 });
 
 module.exports = app;
