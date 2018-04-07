@@ -1,0 +1,114 @@
+doctype html
+html
+    head
+        title= 'HORUS'
+        meta(charset='utf-8')
+        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css',
+        integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm', crossorigin='anonymous')
+        link(rel='stylesheet', href='/stylesheets/dashboard.css')
+    body
+        div(v-if='seen', class='alert alert-danger', role='alert', id='alert_name_mision')
+            span ¡Debe introducir un nombre para la misión!
+        nav(class='navbar navbar-expand-lg navbar-light bg-light')
+            a(class='navbar-brand') HORUS
+            button(class='navbar-toggler', type='button', data-toggle='collapse', data-target='#navbarSupportedContent',
+            aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+                span(class='navbar-toggler-icon')
+            div(class='collapse navbar-collapse', id='navbarSupportedContent')
+                ul(class='navbar-nav mr-auto')
+                    li(class='nav-item')
+                        a(class='nav-link', href='#') Historial
+
+        div(class='container-fluid')
+            <!-- Mapa de Google Maps-->
+            div(class='row row_map')
+                div(class='col')
+                    div(class='row d-flex flex-column h-100')
+                        div(id='map')
+
+            <!-- Boton para configurar la mision-->
+            div(v-if='seen', class='row row_btn', id='btnSetMission')
+                div(class='col')
+                    button(class='btn btn-secondary btn-block', type='button', data-toggle='modal',
+                    data-target='#modalCenter') Configurar misión
+
+            <!-- Añadir/borrar area a la mision y comenzar mision-->
+            div(v-if='seen', class='row row_btn', id='btnArea')
+                div(class='col')
+                    button(class='btn bg-secondary btn-block', type='button', v-on:click='add_area') Añadir área
+                div(class='col')
+                    button(class='btn bg-secondary btn-block', type='button', v-on:click='remove_area') Eliminar área
+                div(class='col')
+                    button(class='btn bg-success btn-block', type='button', v-on:click='start_mission') Comenzar misión
+
+            div(class='modal fade', id='modalCenter', tabindex='-1', role='dialog', aria-labelledby='modalCenterTitle',
+            aria-hidden='true')
+                div(class='modal-dialog modal-dialog-centered', role='document')
+                    div(class='modal-content')
+                        div(class='modal-header')
+                            h5(class='modal-title', id='exampleModalLongTitle') Configuración de la misión
+                            button(class='close', type='button', data-dismiss='modal', arial-label='Close')
+                        div(class='modal-body')
+                            <!-- Formulario para establecer los parametros de la mision -->
+                            form
+                                div(class='form-group')
+                                    input(class='form-control', type='text', id='nombre_mision',
+                                    placeholder='Nombre de la misión', name='nombre_mision',
+                                    v-on:click='hide_alert_name_mision')
+
+                                div(class='input-group mb-3')
+                                    div(class='input-group-prepend')
+                                        label(class='input-group-text', for='tipo_mision') Tipo de misión
+                                    select(class='custom-select', id='tipo_mision', name='timpo_mision')
+                                        option(value='0') Monitorización
+                                        option(value='1') Búsqueda de personas
+
+                                div(class='input-group mb-3')
+                                    div(class='input-group-prepend')
+                                        label(class='input-group-text', for='altura_vuelo') Altura de vuelo
+                                    select(class='custom-select', id='altura_vuelo', name='altura_vuelo')
+                                        option(value='1') 1 m.
+                                        option(value='2') 2 m.
+                                        option(value='3') 3 m.
+                                        option(value='4') 4 m.
+                                        option(value='5') 5 m.
+                                        option(value='6') 6 m.
+
+                                div(class='input-group mb-3')
+                                    div(class='input-group-prepend')
+                                        label(class='input-group-text', for='numero_drones') Número de drones
+                                    select(class='custom-select', id='numero_drones', name='numero_drones')
+                                        option(value='1') 1
+                                        option(value='2') 2
+                                        option(value='3') 3
+                                        option(value='4') 4
+
+                                div(class='input-group mb-3')
+                                    div(class='input-group-prepend')
+                                        label(class='input-group-text', for='solapamiento') Solapamiento entre fotos
+                                    select(class='custom-select', id='solapamiento', name='solapamiento')
+                                        option(value='1') 1
+                                        option(value='2') 2
+                                        option(value='3') 3
+                                        option(value='4') 4
+
+                                div(class='modal-footer')
+                                    button(class='btn btn-secondary', type='button', id='btnClose',
+                                    data-dismiss='modal', v-on:click='hide_alert_name_mision') Cerrar
+
+                                    button(class='btn btn-primary', type='button', id='btnContinue',
+                                    v-on:click='getData') Continuar
+
+
+        script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js',
+        integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN', crossorigin='anonymous')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js',
+        integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q', crossorigin='anonymous')
+        script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js',
+        integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl', crossorigin='anonymous')
+        script(src='https://cdn.jsdelivr.net/npm/vue/dist/vue.js')
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js")
+
+        script(src='/javascripts/dashboard.js')
+        script(async,defer,
+        src='https://maps.googleapis.com/maps/api/js?key=AIzaSyD70tPAmyyOvL1GnSQY8y3w8SU2CY8ZP9Q&callback=initMap')
