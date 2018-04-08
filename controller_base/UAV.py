@@ -16,7 +16,7 @@ class UAV ():
 
     def goToDummy (self, posicion, metros_por_segundo = 2, segundos_entre_actualizacion = 1, grid = None, count = 0):
         '''
-        Parámetros
+        Parametros
         ----------
         posicion : list
             Posicion [x,y] a la que se quiere que viaje el UAV.
