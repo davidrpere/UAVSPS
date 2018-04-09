@@ -1,0 +1,1 @@
+#define MAVLINK_VERSION "2017.9.9"
