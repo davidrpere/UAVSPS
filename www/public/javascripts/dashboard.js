@@ -13,10 +13,10 @@ var btnContinue = new Vue({
     el: '#btnContinue',
     methods: {
         getData: function () {
-            if (!$("#mission_name").val()) {
+            if (!$('#mission_name').val()) {
                 alert_name_mision.seen = true
             } else {
-                params = $("form").serializeArray()
+                params = $('form').serializeArray()
                 $('#modalCenter').modal('toggle')
                 btnSetMission.seen = false
                 btnArea.seen = true
@@ -26,7 +26,7 @@ var btnContinue = new Vue({
 });
 
 var btnClose = new Vue({
-    el: "#btnClose",
+    el: '#btnClose',
     methods: {
         hide_alert_name_mision: function () {
             alert_name_mision.seen = false
@@ -35,14 +35,14 @@ var btnClose = new Vue({
 });
 
 var btnSetMission = new Vue({
-    el: "#btnSetMission",
+    el: '#btnSetMission',
     data: {
         seen: true
     }
 });
 
 var btnArea = new Vue({
-    el: "#btnArea",
+    el: '#btnArea',
     data: {
         seen: false
     },
@@ -64,15 +64,15 @@ var btnArea = new Vue({
 
             var socket = io();
             socket.emit('start_mission', {
-                mission_name: params[0].value,
-                mission_type: params[1].value,
-                altitude_fly: params[2].value,
-                number_drones: params[3].value,
-                overlap: params[4].value,
-                north_east: array_coordJSON[0],
-                north_west: array_coordJSON[1],
-                south_east: array_coordJSON[3],
-                south_west: array_coordJSON[2]
+                'mission_name': params[0].value,
+                'mission_type': params[1].value,
+                'altitude_fly': params[2].value,
+                'number_drones': params[3].value,
+                'overlap': params[4].value,
+                'north_east': array_coordJSON[0],
+                'north_west': array_coordJSON[1],
+                'south_east': array_coordJSON[3],
+                'south_west': array_coordJSON[2]
             });
 
             div_google_maps.seen = false;
@@ -113,7 +113,7 @@ function initAutocomplete() {
         scaleControl: true,
         fullscreenControl: false,
         disableDoubleClickZoom: false,
-        gestureHandling: "auto"
+        gestureHandling: 'auto'
 
     });
 
@@ -147,7 +147,7 @@ function initAutocomplete() {
         var bounds = new google.maps.LatLngBounds();
         places.forEach(function (place) {
             if (!place.geometry) {
-                console.log("Returned place contains no geometry");
+                console.log('Returned place contains no geometry');
                 return;
             }
 
@@ -181,7 +181,7 @@ function initAutocomplete() {
         scaleControl: true,
         fullscreenControl: false,
         disableDoubleClickZoom: false,
-        gestureHandling: "auto"
+        gestureHandling: 'auto'
 
     });
 
@@ -283,7 +283,7 @@ function createPolygonFromRectangle(rectangle) {
         draggable: true
     });
 
-    var properties = ["strokeColor", "strokeOpacity", "strokeWeight", "fillOpacity", "fillColor"];
+    var properties = ['strokeColor', 'strokeOpacity', 'strokeWeight', 'fillOpacity', 'fillColor'];
 
     //inherit rectangle properties
     var options = {};
@@ -321,5 +321,5 @@ function midpoint_coordinates(lat1, lon1, lat2, lon2) {
     lat3 = lat3 * (180 / Math.PI);
     lon3 = lon3 * (180 / Math.PI);
 
-    return {"lat": lat3, "lon": lon3}
+    return {'lat': lat3, 'lon': lon3}
 }
