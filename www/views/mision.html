@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>HORUS</title>
+
+    <!-- Bootstrap 4.0 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.3/vue.js"></script>
+
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCCnvgqyKAQlNFS8vtqQZYU7q5TkE_3mwE"></script>
+
+    <script>
+      // This example creates a custom overlay called USGSOverlay, containing
+      // a U.S. Geological Survey (USGS) image of the relevant area on the map.
+
+      // Set the custom overlay object's prototype to a new instance
+      // of OverlayView. In effect, this will subclass the overlay class therefore
+      // it's simpler to load the API synchronously, using
+      // google.maps.event.addDomListener().
+      // Note that we set the prototype to an instance, rather than the
+      // parent class itself, because we do not wish to modify the parent class.
+
+      var overlay;
+      USGSOverlay.prototype = new google.maps.OverlayView();
+
+      // Initialize the map and the custom overlay.
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 17,
+          center: {lat: 42.172028, lng: -8.680354},
+          mapTypeId: 'satellite'
+        });
+
+//++++++++++++++++ custom photo limits ++++++++++++++++++++++++
+        var bounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(42.171513, -8.680648 ),//++++++++++++ coordinate sw
+            new google.maps.LatLng(42.172209, -8.679601));//+++++++++++ coordinate ne
+
+        // The photograph is courtesy of the U.S. Geological Survey.
+        var srcImage ='https://developers.google.com/maps/documentation/' + 'javascript/examples/full/images/talkeetna.png';
+
+        // The custom USGSOverlay object contains the USGS image,
+        // the bounds of the image, and a reference to the map.
+        overlay = new USGSOverlay(bounds, srcImage, map);
+      }
+
+      /** @constructor */
+      function USGSOverlay(bounds, image, map) {
+
+        // Initialize all properties.
+        this.bounds_ = bounds;
+        this.image_ = image;
+        this.map_ = map;
+
+        // Define a property to hold the image's div. We'll
+        // actually create this div upon receipt of the onAdd()
+        // method so we'll leave it null for now.
+        this.div_ = null;
+
+        // Explicitly call setMap on this overlay.
+        this.setMap(map);
+      }
+
+      /**
+       * onAdd is called when the map's panes are ready and the overlay has been
+       * added to the map.
+       */
+      USGSOverlay.prototype.onAdd = function() {
+
+        var div = document.createElement('div');
+        div.style.borderStyle = 'none';
+        div.style.borderWidth = '0px';
+        div.style.position = 'absolute';
+
+        // Create the img element and attach it to the div.
+        var img = document.createElement('img');
+        img.src = this.image_;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.position = 'absolute';
+        div.appendChild(img);
+
+        this.div_ = div;
+
+        // Add the element to the "overlayLayer" pane.
+        var panes = this.getPanes();
+        panes.overlayLayer.appendChild(div);
+      };
+
+      USGSOverlay.prototype.draw = function() {
+
+        // We use the south-west and north-east
+        // coordinates of the overlay to peg it to the correct position and size.
+        // To do this, we need to retrieve the projection from the overlay.
+        var overlayProjection = this.getProjection();
+
+        // Retrieve the south-west and north-east coordinates of this overlay
+        // in LatLngs and convert them to pixel coordinates.
+        // We'll use these coordinates to resize the div.
+        var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+        var ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+
+        // Resize the image's div to fit the indicated dimensions.
+        var div = this.div_;
+        div.style.left = sw.x + 'px';
+        div.style.top = ne.y + 'px';
+        div.style.width = (ne.x - sw.x) + 'px';
+        div.style.height = (sw.y - ne.y) + 'px';
+      };
+
+      // The onRemove() method will be called automatically from the API if
+      // we ever set the overlay's map property to 'null'.
+      USGSOverlay.prototype.onRemove = function() {
+        this.div_.parentNode.removeChild(this.div_);
+        this.div_ = null;
+      };
+
+      google.maps.event.addDomListener(window, 'load', initMap);
+    </script>
+
+
+    <style>
+    /* Optional: Makes the sample page fill the window. */
+    html, body {
+      height: 100%;
+      }
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 90%;
+        width: 75%;
+        float:right;
+      }
+
+      #data {
+        height: 90%;
+        width: 25%;
+        float:left;
+        background-color: #EFFBEF;
+      }
+
+      .scroll {
+        overflow-y:scroll;
+        height:45%;
+      }
+    </style>
+
+  </head>
+  <body>
+
+    <!--Barra de navegación -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Brand/logo -->
+        <a class="navbar-brand" href="#">
+          <img src="/home/pablo/Escritorio/web/horus.png" alt="logo" style="width:40px;">
+        </a>
+
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+          </button>
+
+            <!-- Links -->
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="dashboard.html">Inicio</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="mision.html">Misión</a>
+                </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="historial.html"> Historial<span class="sr-only"></span></a>
+                  </li>
+              </ul>
+              <form class="form-inline my-2 my-lg-0">
+                  <input class="form-control mr-sm-2" type="search" placeholder="Zona de interés" aria-label="Search">
+                  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+              </form>
+          </div>
+      </nav>
+
+    <div class="col-sm-3" id="data">
+      <!-- Tabla -->
+      <div class='tabla' id="tabla">
+      <h3>Información</h3>
+        <table class="table table-striped"  v-if='mostrar_tabla'>
+          <thead>
+            <tr>
+              <th>Id dron</th>
+              <th>Batería</th>
+              <th>Coordenadas</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr v-for = 'drones in arraydrones'>
+              <td>{{drones.id}}</td>
+              <td>{{drones.charge}}%</td>
+              <td>{{drones.coordinates}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" class="btn btn-success" id="mostrar" @click='toggleMostrar()'>Mostrar/Ocultar tabla</button>
+      </div>
+      <br>
+      <!-- Botones -->
+      <div class='buttons'>
+      <button type="button" class="btn btn-danger" id="finalizar" onclick='finalizarMision()'>Finalizar Misión</button>
+      <button type="submit" class="btn btn-warning" id="editar">Editar nueva área</button><br><br>
+      </div>
+
+<div class="scroll">
+      <div class="alert alert-success">
+  <strong>Success!</strong> Indicates a successful or positive action.
+</div>
+
+<div class="alert alert-info">
+  <strong>Info!</strong> Indicates a neutral informative change or action.
+</div>
+
+<div class="alert alert-warning">
+  <strong>Warning!</strong> Indicates a warning that might need attention.
+</div>
+
+<div class="alert alert-danger">
+  <strong>Danger!</strong> Indicates a dangerous or potentially negative action.
+</div>
+<div class="alert alert-danger">
+  <strong>Danger!</strong> Indicates a dangerous or potentially negative action.
+</div><div class="alert alert-danger">
+  <strong>Danger!</strong> Indicates a dangerous or potentially negative action.
+</div><div class="alert alert-danger">
+  <strong>Danger!</strong> Indicates a dangerous or potentially negative action.
+</div>
+
+</div>
+    </div>
+
+
+<!-- MAPA SUPERPOSICION -->
+    <div class="col-sm-9" id="map">
+
+    </div>
+
+    <script>
+    const tabla = new Vue(
+      {
+      el: '#tabla',
+      data:{
+        arraydrones:[
+          {id: 1, charge: 99, coordinates:"42.65643 -8.33535"},
+          {id: 2, charge: 90, coordinates:"42.65643 -8.33535"},
+          {id: 3, charge: 56, coordinates:"42.65643 -8.33535"}
+        ],
+        mostrar_tabla:true
+      },
+      methods:{
+        toggleMostrar : function(){
+          this.mostrar_tabla = !this.mostrar_tabla
+        }
+      }
+      }
+    )
+    </script>
+  </body>
+</html>

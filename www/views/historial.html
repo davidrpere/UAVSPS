@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>HORUS</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="uavsps.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.3/vue.js"></script>
+  <script type="text/javascript" src="javascript.js"></script>
+
+
+<style>
+.modal-content {
+  background-color: #A4A4A4;
+}
+</style>
+
+</head>
+
+<body>
+
+  <!--form name="form_historial" onSubmit="return comprobar_var_historial()" action="galeria.html"-->
+
+  <!--Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <!-- Brand/logo -->
+      <a class="navbar-brand" href="#">
+        <img src="/home/pablo/Escritorio/web/horus.png" alt="logo" style="width:40px;">
+      </a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+        </button>
+
+          <!-- Links -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="dashboard.html">Inicio</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="mision.html">Misión</a>
+              </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="historial.html"> Historial<span class="sr-only"></span></a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Zona de interés" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+            </form>
+        </div>
+    </nav>
+
+
+<div class="container-fluid" id='numeroDron'>
+<div class="row" >
+  <div class="col-sm-4"  style="background-color:lavender;" v-for = 'drones in fotosDrones'>
+    <div class="card">
+    <div class="card-header" >
+      <img src='camara.jpg'></img>
+    </div>
+    <div class="card-body">
+      Fotos dron id={{drones.id}} <br>
+      <!--Botón para mostrar galería del dron seleccionado-->
+      <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#exampleModalCenter">Ver galería</button>
+    </div>
+  </div>
+  </div>
+  </div>
+
+
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Galería</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+              <div id="demo" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="horus.png">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="camara.jpg" alt="Chicago" width="700" height="500">
+                    <div class="carousel-caption">
+                    </div>
+                  </div>
+                </div>
+                <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </a>
+                <a class="carousel-control-next" href="#demo" data-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </a>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+<!--**************************** VUE.JS **********************-->
+<script>
+const numeroDron = new Vue({
+  el: '#numeroDron',
+  data:{
+    fotosDrones:[
+      {id: 1, charge: 99, coordinates:"42.65643 -8.33535"},
+      {id: 2, charge: 90, coordinates:42},
+      {id: 3, charge: 56, coordinates:42}
+    ],
+    dron: 1
+  }
+  })
+</script>
+<!--/form-->
+</body>
+</html>
