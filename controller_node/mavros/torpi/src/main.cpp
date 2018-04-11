@@ -5,15 +5,74 @@
 #include <mavros_msgs/CommandTOL.h>
 #include <mavros_msgs/SetMode.h>
 
+
+//Nuestras clases
+#include "client_waypoints_fotos.h"
+#include "publisher_gps_fotos.h"
+
 int main(int argc, char **argv)
 {
 
+    std::string localhost_5557 = "tcp://*:5557";
+    publisher_gps_fotos publisher("Grillito", localhost_5557);
+    //IP+puerto propios, porque elegimos dónde publicar
+    std::string ip_gcs = "tcp://192.168.0.10:5558";
+    client_waypoints_fotos cliente("Pepito", ip_gcs);
+    //IP+puerto del GCS para el cliente, que elige dónde escuchar
+
+    //publisher.publish(500,500,500);
+    //cliente.receive();
+
     int rate = 10;
 
-    ros::init(argc, argv, "mavros_takeoff");
+    ros::init(argc, argv, "uavsps_guided");
     ros::NodeHandle n;
 
     ros::Rate r(rate);
+
+    return 0;
+
+    //Todo de aquí abajo es pseudocódigo
+
+    bool obtenidos_waypoints = false;
+
+    while(!obtenidos_waypoints)
+    {
+        /*
+         * publisher.publish()
+         *
+         * if(cliente.waypoints_listos){
+         *  std::vector<...> = cliente.getwaypoints
+         *
+         *  obtenidos_waypoints = true
+         *  }
+         *  else
+         *  {
+         *  sleep
+         *  continue
+         *  }
+         * */
+    }
+
+    //cargo waypoints
+    //armo sistema
+    //activo modo guided
+    //despego
+    //while(1){
+    // publisher.publishgps
+    // if(waypoint_reached){
+    //
+    //  take_photo()
+    //  publisher.publish_photo()
+    //  if(next waypoint){}else return to home
+    // }else{
+    //   usleep 100 ms
+    //  }
+    //
+    // }
+
+    //Me suscribo a GPS y según o los obtengo llamo a publisher.publish en bucle
+    //Espero a obtener mis waypoints mientras sigo publicando
 
     ////////////////////////////////////////////
     /////////////////GUIDED/////////////////////
