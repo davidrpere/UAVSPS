@@ -84,7 +84,7 @@ class AlgoritmoMTSP():
                 for indice in indices[0]:
                     if indice not in ciudades_visitadas:
                         ciudades_dron[dron.id].append(indice)
-                        posiciones_actuales[dron.id] = nodos[indice]
+                        posiciones_actuales[dron.id] = self.nodos[indice]
                         ciudades_visitadas.append(indice)
                         break
 
@@ -118,7 +118,7 @@ class AlgoritmoMTSP():
                     if indice not in ciudades_ya_asignadas:
                         ciudades_ya_asignadas.append(indice)
                         ciudades_dron[dron.id].append(indice)
-                        posicion_actual = nodos[indice]
+                        posicion_actual = self.nodos[indice]
                         break
 
         cromosoma = []
@@ -490,4 +490,6 @@ class AlgoritmoMTSP():
                             posiciones_ya_asignadas.append(indice)
                             break
                     break
-        return drones
+        
+        #return drones
+        self.drones = drones
