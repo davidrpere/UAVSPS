@@ -1,0 +1,16 @@
+"/Users/drodriguez/Library/Application Support/JetBrains/Toolbox/apps/CLion/ch-0/181.4203.549/CLion.app/Contents/bin/cmake/bin/cmake" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros
+CMake Warning at /Users/drodriguez/Library/Application Support/JetBrains/Toolbox/apps/CLion/ch-0/181.4203.549/CLion.app/Contents/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /Users/drodriguez/Library/Application Support/JetBrains/Toolbox/apps/CLion/ch-0/181.4203.549/CLion.app/Contents/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /Users/drodriguez/Library/Application Support/JetBrains/Toolbox/apps/CLion/ch-0/181.4203.549/CLion.app/Contents/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  CMakeLists.txt:8 (FIND_PACKAGE)
+
+
+-- Boost version: 1.66.0
+-- Found the following Boost libraries:
+--   program_options
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/cmake-build-debug

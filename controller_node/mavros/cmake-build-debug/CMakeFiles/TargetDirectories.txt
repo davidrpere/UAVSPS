@@ -1,0 +1,3 @@
+/Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/cmake-build-debug/CMakeFiles/mavros.dir
