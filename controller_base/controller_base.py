@@ -141,11 +141,9 @@ def main ():
               UAV (2, caracteristicas_sensor, [np.random.randint(-5, 90), np.random.randint(-5, 130)], color='b', style='--'),
               UAV (3, caracteristicas_sensor, [np.random.randint(-5, 90), np.random.randint(-5, 130)], color='y', style='--')]
 
-    nodos = utils.getNodosGrafo(northWest, northEast, southWest, southEast, altura_vuelo_uav, fraccion_solape, caracteristicas_sensor)
-
+    nodos, nodos_geometricas = utils.getNodosGrafo(northWest, northEast, southWest, southEast, altura_vuelo_uav, fraccion_solape, caracteristicas_sensor)
     
     combinacion = {'n_nearest_rr': 7, 'n_nearest': 7, 'n_random': 35, 'n_generaciones': 10000, 'limite_generaciones_sin_cambio':1000, 'contar_pos_inicial_en_fitness':True}
-
 
     ga = AlgoritmoMTSP(nodos, drones)
     cromosoma_ganador, fitness = ga.getRutasSubOptimas(n_nearest_rr = combinacion['n_nearest_rr'], 
@@ -156,6 +154,8 @@ def main ():
                                                                 contar_pos_inicial_en_fitness = combinacion['contar_pos_inicial_en_fitness'],
                                                                 ruta_logs = './prueba/')
     #computarAlgoritmoCombinaciones(nodos, drones, combinaciones_base, combinaciones)
+
+    
 
 
 if __name__ == '__main__':
