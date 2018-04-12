@@ -42,6 +42,11 @@ def cartToGeoCoord (x_meters, y_meters, origenCoordGeo):
     return geoCoord.latitude, geoCoord.longitude
 
 
+def coordenadasNodosToGeograficas (nodos):
+    pass
+
+
+
 def calcularFootprint (altura_vuelo_uav, ancho_sensor, distancia_focal, angulo_inclinacion):
     '''
     Calcula el numero de metros que recoge la camara del UAV.
@@ -90,7 +95,7 @@ def distancia (pos1, pos2):
     return np.sqrt(np.sum(np.power((np.array(pos1)-np.array(pos2)),2)))
 
 
-def calcularGrafo (nodos):
+def calcularGrafoEdges (nodos):
     '''
     Construye el grafo.
 
@@ -124,13 +129,39 @@ def calcularGrafo (nodos):
     return grafo, np.array(list_edges)
 
 
+def getNodos (divisiones_x, divisiones_y, origenCoord):
+    '''
+    Construye el grafo.
+
+    Parametros
+    ------------
+    divisiones_x: list
+        Divisiones eje x
+    divisiones_y : list
+        Divisiones eje y
+
+    Returns
+    --------
+    dict
+        Diccionario, key = id, value: posicion
+    '''
+    nodos_cartesianas, nodos_geometricas = {}, {}
+    id = 0
+    for pos_x in divisiones_x:
+        for pos_y in divisiones_y:
+            nodos_cartesianas[id] = [pos_x, pos_y]
+            nodos_geometricas[id] = cartToGeoCoord(pos_x, pos_y, origenCoord)
+            id += 1
+    return nodos_cartesianas, nodos_geometricas
+
+
 def escalar (valor, old_min, old_max, new_min, new_max):
     '''
     '''
     return ((new_max - new_min) * (valor - old_min) / (old_max - old_min)) + new_min    
 
 
-def calcularDivisiones (lado, footprint, fraccion_solape):
+def calcularDivisionesEje (lado, footprint, fraccion_solape):
     '''
     '''
      
@@ -148,13 +179,12 @@ def getNodosGrafo (northWest, northEast, southWest, southEast, altura_vuelo_uav,
     footprint = calcularFootprint (altura_vuelo_uav, caracteristicas_sensor['ancho_sensor'], 
                                    caracteristicas_sensor['distancia_focal'], caracteristicas_sensor['angulo_inclinacion'])
 
-    divisiones_x = calcularDivisiones (x, footprint, fraccion_solape)
-    divisiones_y = calcularDivisiones (y, footprint, fraccion_solape)
+    divisiones_x = calcularDivisionesEje (x, footprint, fraccion_solape)
+    divisiones_y = calcularDivisionesEje (y, footprint, fraccion_solape)
 
-    nodos = calcularNodosGrafo (divisiones_x, divisiones_y)
-    grafo, edges = calcularGrafo(nodos)
-    
-    return grafo
+    nodos_cartesianas, nodos_geometricas = getNodos(divisiones_x, divisiones_y, southWest)
+
+    return nodos_cartesianas, nodos_geometricas
 
 
 def dibujarNodos (grafo, aspect, size = 9):
