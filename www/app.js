@@ -6,6 +6,8 @@ var path = require("path");
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var zmq = require('zmq');
+var req_genetic_algorithm = zmq.socket('req')
+
 
 //Router
 var dashboardRouter = require('./routes/dashboard');
@@ -19,24 +21,25 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('*', dashboardRouter);
+
+//Express router
+app.use('/', dashboardRouter);
+
+//Establish connection in port 5555 using ZMQ with the genetic algorithm code.
+req_genetic_algorithm.connect("tcp://localhost:5555");
+
+req_genetic_algorithm.on("message", function(reply) {
+    console.log(reply.toString());
+});
 
 
 io.on('connection', function (socket) {
     socket.on('start_mission', function (data) {
         console.log("Connecting to genetic_algoritm...");
-        var requester = zmq.socket('req');
-
-        requester.connect("tcp://localhost:5555");
-
-        requester.send(JSON.stringify(data));
-
-        requester.on("message", function(reply) {
-            console.log(reply.toString());
-            requester.close();
-        });
+        req_genetic_algorithm.send(JSON.stringify(data));
     });
 });
+
 
 http.listen(3000, function(){
     console.log('listening on *:3000');

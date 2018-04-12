@@ -1,31 +1,94 @@
 doctype html
 html
     head
-        title= 'HORUS'
-        meta(charset='utf-8')
-        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css',
-        integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm', crossorigin='anonymous')
-        link(rel='stylesheet', href='/stylesheets/dashboard.css')
+        title= "HORUS"
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons")
+        link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css")
+        link(rel="stylesheet", href="/stylesheets/dashboard.css")
+        link(rel="stylesheet", href="/stylesheets/magnific_popup.css")
     body
-        nav(class='navbar navbar-expand-lg navbar-light bg-light')
-            a(class='navbar-brand') HORUS
-            button(class='navbar-toggler', type='button', data-toggle='collapse', data-target='#navbarSupportedContent',
-            aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
-                span(class='navbar-toggler-icon')
-            div(class='collapse navbar-collapse', id='navbarSupportedContent')
-                ul(class='navbar-nav mr-auto')
-                    li(class='nav-item')
-                        a(class='nav-link', href='#') Historial
+        nav(class="nav-extended")
+            div(class="nav-wrapper blue darken-2")
+                a(class="brand-logo center", href="/") HORUS
+                a(class="sidenav-trigger show-on-large", data-target="mobile-demo", href="#")
+                    i(class="material-icons") menu
+                a(v-if='seen', class="btn-floating btn-large halfway-fab waves-effect waves-light red", id="btn-floating-stop")
+                    i(class="material-icons") stop
 
-        include configure_mission
+            ul(class="sidenav", id="mobile-demo")
+                li
+                    a(href="/historial") Historial
+                    
+        div(class='row')
+            input(id="pac-input", class="controls", type="text", placeholder="Buscar")
+            div(id="map")
 
-        script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js',
-        integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN', crossorigin='anonymous')
-        script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js',
-        integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q', crossorigin='anonymous')
-        script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js',
-        integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl', crossorigin='anonymous')
-        script(src='https://cdn.jsdelivr.net/npm/vue/dist/vue.js')
+        div(v-if='seen', class="fixed-action-btn horizontal direction-top direction-bottom", id="btn-float")
+            a(class="btn-floating btn-large red")
+                i(class="large material-icons") mode_edit
+            ul
+                li
+                    a(class="btn-floating green darken-2", v-on:click='start_mission')
+                        i(class="material-icons") play_arrow
+                li
+                    a(class="btn-floating orange darken-2 modal-trigger", href="#modal1")
+                        i(class="material-icons") assignment
+
+                li
+                    a(class="btn-floating yellow darken-2", v-on:click='remove_area')
+                        i(class="material-icons") layers_clear
+
+                li
+                    a(class="btn-floating deep-purple darken-2", v-on:click='add_area')
+                        i(class="material-icons") layers
+
+
+        div(class="modal", id="modal1")
+            div(class="modal-content")
+                div(class="row")
+                    form(class="col s12")
+                        div(class="row")
+                            div(class="input-field col s12")
+                                input(id="first_name", type="text", class="validate", name="nombre_mision")
+                                label(for="first_name") Nombre de la misión
+                        div(class="row")
+                            div(class="input-field col s8")
+                                select(name="tipo_mision")
+                                    option(value="", disabled, selected)
+                                    option(value="0") Monitorización
+                                    option(value="1") Búsqueda de personas
+                                label Tipo de misión
+                            div(class="input-field col s4")
+                                select(name="numero_drones")
+                                    option(value="", disabled, selected)
+                                    option(value="1") 1
+                                    option(value="2") 2
+                                    option(value="3") 3
+                                    option(value="4") 4
+                                label Número de drones
+                        div(class="row")
+                            div(class="col s8")
+                                label Solapamiento de imágenes (%)
+                                p(class="range-field")
+                                    input(type="range", min="0", max="100", value="1", name="solapamiento_img")
+                            div(class="col 4")
+                                label Altura de vuelo (metros)
+                                p(class="range-field")
+                                    input(type="range", min="1", max="20", value="1", name="altura_vuelo")
+
+            div(class="modal-footer")
+                a(class="modal-action modal-close waves-effect waves-green btn-flat", href="#!") Continuar
+
+        script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js",
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN", crossorigin="anonymous")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js",
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q", crossorigin="anonymous")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js")
+        script(src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.dev.js")
-        script(src='/javascripts/dashboard.js')
-        script(async, defer, src='https://maps.googleapis.com/maps/api/js?key=AIzaSyD70tPAmyyOvL1GnSQY8y3w8SU2CY8ZP9Q&libraries=places&callback=initAutocomplete')
+        script(src="/javascripts/vue_dashboard.js")
+        script(src="/javascripts/magnific_popup.js")
+        script(src="/javascripts/google_maps.js")
+        script(async, defer, src="https://maps.googleapis.com/maps/api/js?" +
+        "key=AIzaSyD70tPAmyyOvL1GnSQY8y3w8SU2CY8ZP9Q&libraries=places&callback=initAutocomplete")

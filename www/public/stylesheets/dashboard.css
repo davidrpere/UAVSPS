@@ -1,19 +1,38 @@
 html,
 body {
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
 
 }
 
-.container-fluid {
-  height: 80%;
-  padding-left: 0%;
-  padding-right: 0%;
+#btn-float{
+  z-index: 999997;
 }
 
-#map,
-.row_map {
+#btn-float-stop{
+  z-index: 999997;
+  right: 50%;
+}
+
+:focus{
+  outline: none;
+}
+
+.gm-fullscreen-control {
+  display: none;
+}
+
+
+.sidenav {
+  z-index: 999997;
+}
+.nav-wrapper {
+  z-index: 999996;
+}
+
+#map {
   height: 100%;
   padding-right: 1%;
   padding-left: 1%;
@@ -35,10 +54,10 @@ body {
   font-family: Roboto;
   font-size: 15px;
   font-weight: 300;
-  margin-left: 12px;
+  margin-left: 0px;
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
-  width: 400px;
+  width: 30%;
 }
 
 #pac-input:focus {
@@ -60,24 +79,10 @@ body {
   font-size: 13px;
   font-weight: 300;
 }
-#target {
-  width: 345px;
-}
+
 
 .row_btn {
   margin-top: 1%;
   padding-left: 30%;
   padding-right: 30%;
-}
-
-.alert {
-  text-align: center;
-  position: fixed;
-  top: 0%;
-  width: 100%;
-  z-index: 999999;
-}
-
-#progress_bar {
-  margin-top: 25%;
 }
