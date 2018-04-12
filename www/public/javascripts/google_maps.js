@@ -13,8 +13,19 @@ function initAutocomplete() {
         scaleControl: true,
         fullscreenControl: false,
         disableDoubleClickZoom: false,
-        gestureHandling: 'auto'
-
+        gestureHandling: 'auto',
+        zoomControl: true,
+        zoomControlOptions: {
+            position: google.maps.ControlPosition.LEFT_BOTTOM
+        },
+        streetViewControl: true,
+        streetViewControlOptions: {
+            position: google.maps.ControlPosition.LEFT_BOTTOM
+        },
+        rotateControl: true,
+        rotateControlOptions: {
+            position: google.maps.ControlPosition.LEFT_BOTTOM
+        },
     });
 
     // Create the search box and link it to the UI element.
@@ -83,15 +94,6 @@ function mission_map(lat, lng) {
         fullscreenControl: false,
         gestureHandling: 'auto'
     });
-
-    var locations = [
-        [42.17042007861182, -8.68519511376951],
-        [42.17042007861182, -8.681761886230447],
-        [42.16854769367686, -8.68519511376951],
-        [42.16854769367686, -8.681761886230447]
-    ];
-
-    setMarkers(map, locations)
 }
 
 function get_center_lat() {
@@ -199,48 +201,39 @@ function midpoint_coordinates(lat1, lon1, lat2, lon2) {
 }
 
 
-function setMarkers(map, locations) {
+function setMarkers(lat, lng, path) {
+    latlngset = new google.maps.LatLng(lat, lng);
 
-    var marker, i
+    var marker = new google.maps.Marker({
+        map: map,
+        position: latlngset,
+        icon: '/images/pin.png'
+    });
 
-    for (i = 0; i < locations.length; i++) {
-        var lat = locations[i][0]
-        var long = locations[i][1]
 
-        latlngset = new google.maps.LatLng(lat, long);
+    var content = '<a class="image-popup-vertical-fit" href="' + path + '" ' +
+        'title="Coordenadas: (' + lat + ',' + lng + ')">\n' +
+        '\t<img src="' + path + '" width="200"></a>';
 
-        var marker = new google.maps.Marker({
-            map: map,
-            position: latlngset,
-            icon: '/images/pin.png'
+    var infowindow = new google.maps.InfoWindow();
+
+    google.maps.event.addListener(marker, 'click', (function (marker, content, infowindow) {
+        return function () {
+            infowindow.setContent(content);
+            infowindow.open(map, marker);
+        };
+    })(marker, content, infowindow));
+
+    google.maps.event.addListener(infowindow, 'domready', function () {
+        $('.image-popup-vertical-fit').magnificPopup({
+            type: 'image',
+            closeOnContentClick: true,
+            mainClass: 'mfp-img-mobile',
+            image: {
+                verticalFit: true
+            }
+
         });
-
-
-        var content = '<a class="image-popup-vertical-fit" href="/images/prueba.jpg" ' +
-            'title="Coordenadas: (' + lat + ',' + long + ')">\n' +
-            '\t<img src="/images/prueba.jpg" width="200"></a>';
-
-        var infowindow = new google.maps.InfoWindow();
-
-        google.maps.event.addListener(marker, 'click', (function (marker, content, infowindow) {
-            return function () {
-                infowindow.setContent(content);
-                infowindow.open(map, marker);
-            };
-        })(marker, content, infowindow));
-
-        google.maps.event.addListener(infowindow, 'domready', function () {
-            $('.image-popup-vertical-fit').magnificPopup({
-                type: 'image',
-                closeOnContentClick: true,
-                mainClass: 'mfp-img-mobile',
-                image: {
-                    verticalFit: true
-                }
-
-            });
-        });
-
-    }
+    });
 }
 
