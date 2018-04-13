@@ -20,7 +20,7 @@ public:
             : identity(identity),
               ip_gcs(ip_gcs),
               context(1),
-              subscriber(context,ZMQ_SUB)
+              subscriber(this->context,ZMQ_SUB)
             {
                 std::cout << "Constructor client waypoints fotos" << std::endl;
                 //me conecto al ip+puerto del gcs porque es donde va a publicar

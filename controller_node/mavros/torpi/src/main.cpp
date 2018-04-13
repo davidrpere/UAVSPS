@@ -1,44 +1,82 @@
 #include <cstdlib>
 
 #include <ros/ros.h>
+
+#include <mavros_msgs/CommandBoolRequest.h>
+#include <mavros_msgs/CommandBoolResponse.h>
+
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/CommandTOL.h>
 #include <mavros_msgs/SetMode.h>
 
+#include <mavros_msgs/WaypointList.h>
+#include <mavros_msgs/WaypointClear.h>
+
+#include <sensor_msgs/NavSatFix.h>
+#include <sensor_msgs/Imu.h>
 
 //Nuestras clases
 #include "client_waypoints_fotos.h"
 #include "publisher_gps_fotos.h"
 
+std::string localhost_5557 = "tcp://*:5557";
+publisher_gps_fotos publisher("Grillito", localhost_5557);
+
+void gps_callback(const sensor_msgs::NavSatFix::ConstPtr& msg){
+    publisher.publish(msg->latitude, msg->longitude, msg->altitude);
+}
+
+void waypointlist_callback(const mavros_msgs::WaypointList& msg){
+    for(int i = 0; i<msg.waypoints.size(); i++){
+        std::cout << msg.waypoints[i] << std::endl;
+    }
+}
+
+void chatterCallback(const sensor_msgs::Imu::ConstPtr& msg){
+    ROS_INFO("\nlinear acceleration\
+                 \nx: [%f]\ny:[%f]\nz:[%f]", msg->linear_acceleration.x,
+             msg->linear_acceleration.y, msg->linear_acceleration.z);
+}
+
 int main(int argc, char **argv)
 {
 
-    std::string localhost_5557 = "tcp://*:5557";
-    publisher_gps_fotos publisher("Grillito", localhost_5557);
+    //std::string localhost_5557 = "tcp://*:5557";
+    //publisher_gps_fotos publisher("Grillito", localhost_5557);
     //IP+puerto propios, porque elegimos dónde publicar
-    std::string ip_gcs = "tcp://192.168.0.10:5558";
-    client_waypoints_fotos cliente("Pepito", ip_gcs);
+    //std::string ip_gcs = "tcp://192.168.0.10:5558";
+    //client_waypoints_fotos cliente("Pepito", ip_gcs);
     //IP+puerto del GCS para el cliente, que elige dónde escuchar
 
     //publisher.publish(500,500,500);
     //cliente.receive();
 
-    int rate = 10;
+    std::cout << "Terminada borrallada" << std::endl;
+
+    //int rate = 1;
 
     ros::init(argc, argv, "uavsps_guided");
     ros::NodeHandle n;
 
-    ros::Rate r(rate);
+    ros::Subscriber sub_gps = n.subscribe("/mavros/global_position/global", 1, gps_callback);
+    //ros::Subscriber sub_imu = n.subscribe("/mavros/imu/data", 1000, chatterCallback);
+    ros::Subscriber get_wayps = n.subscribe("/mavros/mission/waypoints", 1, waypointlist_callback);
+    ros::ServiceClient clear_wayps = n.serviceClient<mavros_msgs::WaypointClear>("/mavros/mission/clear");
+
+
+    //ros::Rate r(rate);
+    ros::spin();
+
 
     return 0;
-
+    /*
     //Todo de aquí abajo es pseudocódigo
 
     bool obtenidos_waypoints = false;
 
     while(!obtenidos_waypoints)
     {
-        /*
+
          * publisher.publish()
          *
          * if(cliente.waypoints_listos){
@@ -51,7 +89,6 @@ int main(int argc, char **argv)
          *  sleep
          *  continue
          *  }
-         * */
     }
 
     //cargo waypoints
@@ -100,7 +137,6 @@ int main(int argc, char **argv)
         ROS_ERROR("Failed arming or disarming");
     }
 
-    /*
     ////////////////////////////////////////////
     /////////////////TAKEOFF////////////////////
     ////////////////////////////////////////////
@@ -116,7 +152,6 @@ int main(int argc, char **argv)
     }else{
         ROS_ERROR("Failed Takeoff");
     }
-    */
 
     ////////////////////////////////////////////
     /////////////////DO STUFF///////////////////
@@ -145,5 +180,5 @@ int main(int argc, char **argv)
         r.sleep();
     }
 
-    return 0;
+    return 0;*/
 }

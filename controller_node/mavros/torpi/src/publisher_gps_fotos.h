@@ -31,7 +31,7 @@ public:
         //pthread create (thread-parameters, blabla, this->run(), blabla)
     }
 
-    void publish(int latitud, int longitud, int altitud);
+    void publish(double latitud, double longitud, double altitud);
 
     void publish();
 
