@@ -18,6 +18,3 @@ ehthumbs.db
 Thumbs.db
 
 #Other files and folders#
-build
-.ipynb_checkpoints
-.idea
