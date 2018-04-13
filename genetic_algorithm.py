@@ -11,15 +11,15 @@ while True:
     message = socket.recv_json()
 
     print "\n\n*************************************************************"
-    print "Nombre de la mision: " , message['mission_name']
-    print "Tipo de mision: " , message['mission_type']
-    print "Altitud de vuelo: " , message['altitude_fly']
-    print "Numero de drones: " , message['number_drones']
-    print "Solapamiento entre imagenes: " , message['overlap']
-    print "NE: " , message['north_east']
-    print "NO: " , message['north_west']
-    print "SE: " , message['south_east']
-    print "SO: " , message['south_west']
+    print "Nombre de la mision: " , message['nombre_mision']
+    print "Tipo de mision: " , message['tipo_mision']
+    print "Altitud de vuelo: " , message['altura_vuelo']
+    print "Numero de drones: " , message['numero_drones']
+    print "Solapamiento entre imagenes: " , message['solapamiento']
+    print "NE: " , message['norte_este']
+    print "NO: " , message['norte_oeste']
+    print "SE: " , message['sur_este']
+    print "SO: " , message['sur_oeste']
     print "*************************************************************"
 
     #  Do some 'work'

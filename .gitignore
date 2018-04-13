@@ -18,17 +18,3 @@ ehthumbs.db
 Thumbs.db
 
 #Other files and folders#
-build
-.ipynb_checkpoints
-.idea
-
-#Visual Studio#
-*.sln
-*.pyproj
-__pycache__
-.vs
-
-controller_base/logs*
-controller_base/Ejemplos
-controller_base/prueba/cromosoma_ganador_0.png
-controller_base/prueba/cromosoma_ganador_1268.png

@@ -6,6 +6,8 @@ var path = require("path");
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var zmq = require('zmq');
+var req_genetic_algorithm = zmq.socket('req')
+
 
 //Router
 var dashboardRouter = require('./routes/dashboard');
@@ -17,28 +19,51 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(cookieParser());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('*', dashboardRouter);
 
+//Express router
+app.use('/', dashboardRouter);
+
+//Establish connection in port 5555 using ZMQ with the genetic algorithm code.
+req_genetic_algorithm.connect("tcp://localhost:5555");
+
+req_genetic_algorithm.on("message", function (reply) {
+    console.log(reply.toString());
+});
+
+
+var locations = [
+    [42.17042007861182, -8.68519511376951],
+    [42.17042007861182, -8.681761886230447],
+    [42.16854769367686, -8.68519511376951],
+    [42.16854769367686, -8.681761886230447]
+];
+var x = 0;
 
 io.on('connection', function (socket) {
     socket.on('start_mission', function (data) {
         console.log("Connecting to genetic_algoritm...");
-        var requester = zmq.socket('req');
+        //req_genetic_algorithm.send(JSON.stringify(data));
 
-        requester.connect("tcp://localhost:5555");
+        for (var i = 0; i < 5; i++) {
+            setTimeout(function () {
+                if(x < 4){
+                    socket.emit('waypoints', {"lat": locations[x][0], "lng": locations[x][1], "img": "/images/prueba.jpg"});
+                }
+                else{
+                    console.log("entra");
+                    socket.emit('waypoints', {"lat": 42.17042007861182, "lng": -8.68519511376951, "img": "/images/prueba2.jpg"});
+                }
 
-        requester.send(JSON.stringify(data));
-
-        requester.on("message", function(reply) {
-            console.log(reply.toString());
-            requester.close();
-        });
+                x = x + 1;
+            }, i * 5000)
+        }
     });
 });
 
-http.listen(3000, function(){
+
+http.listen(3000, function () {
     console.log('listening on *:3000');
 });
 
