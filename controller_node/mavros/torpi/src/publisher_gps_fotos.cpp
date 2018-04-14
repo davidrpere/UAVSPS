@@ -4,11 +4,12 @@
 
 #include "publisher_gps_fotos.h"
 
-void publisher_gps_fotos::publish(double latitud, double longitud, double altitud) {
-    zmq::message_t message();
+void publisher_gps_fotos::publish(int id, double latitud, double longitud, double altitud) {
     int size=0;
-    snprintf((char *) message.data(), 60 ,
-        "%f %f %f", latitud, longitud, altitud);
+	size=sizeof(id)+sizeof(latitud)+sizeof(longitud)+sizeof(altitud)+1;
+	zmq::message_t message(size);
+    snprintf((char *) message.data(), size ,
+        "%i %f %f %f",id, latitud, longitud, altitud);
     this->publisher.send(message);
 
 }
@@ -18,11 +19,11 @@ void publisher_gps_fotos::publish() {
 
 }
 
-void publisher_gps_fotos::run(){
+Json publisher_gps_fotos::run(){
     while(1){
 
-        //obtener posición gps
-
+        
+	
         //publicar
         this->publish();
 
