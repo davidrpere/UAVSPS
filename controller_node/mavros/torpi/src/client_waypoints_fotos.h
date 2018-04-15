@@ -26,11 +26,9 @@ public:
                 //me conecto al ip+puerto del gcs porque es donde va a publicar
                 //todos los waypoints
                 this->subscriber.connect("tcp://192.168.0.10:5558");
-
                 //filtro por mi "identidad" para coger sólo los que me tocan
                 const char *filter = identity.c_str();
                 this->subscriber.setsockopt(ZMQ_SUBSCRIBE,filter,strlen(filter));
-
                 std::cout << "Conectado receiver al socket con filtro" << std::endl;
             }
 

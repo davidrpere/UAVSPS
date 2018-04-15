@@ -5,9 +5,9 @@
 #include "publisher_gps_fotos.h"
 
 void publisher_gps_fotos::publish(double latitud, double longitud, double altitud) {
-    zmq::message_t message();
-    int size=0;
-    snprintf((char *) message.data(), 60 ,
+    int size = sizeof(latitud)+ sizeof(longitud)+ sizeof(altitud)+2;
+    zmq::message_t message(size);
+    snprintf((char *) message.data(), size ,
         "%f %f %f", latitud, longitud, altitud);
     this->publisher.send(message);
 
@@ -36,4 +36,3 @@ void publisher_gps_fotos::run(){
 
     }
 }
-

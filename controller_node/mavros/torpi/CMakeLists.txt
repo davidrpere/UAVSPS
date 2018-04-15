@@ -39,6 +39,7 @@ add_executable(uavsps_guided
         src/main.cpp
         src/client_waypoints_fotos.cpp
         src/client_waypoints_fotos.h
+        src/apm_modes.h
         src/publisher_gps_fotos.cpp
         src/publisher_gps_fotos.h)
 
