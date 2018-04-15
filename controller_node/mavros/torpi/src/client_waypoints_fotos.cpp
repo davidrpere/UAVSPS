@@ -13,7 +13,8 @@ void client_waypoints_fotos::receive() {
         subscriber.recv(&update);
 
 		std::string strJson =std::string(static_cast<char*>(update.data()), update.size())	;
-		Json::Value waypoints_ss; // en waypoints_ss se guardan los Waypoints en formato JSON (no sé bien como se deben validar ni como me los van a mandar)
+		Json::Value waypoints_ss;
+    // en waypoints_ss se guardan los Waypoints en formato JSON (no sé bien como se deben validar ni como me los van a mandar)
     	Json::Reader reader;
 		reader.parse(strJson.c_str(),waypoints_ss);
     	Json::FastWriter fastwriter;

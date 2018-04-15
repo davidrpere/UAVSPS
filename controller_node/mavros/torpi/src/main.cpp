@@ -49,7 +49,7 @@ public:
 
 void gps_callback(const sensor_msgs::NavSatFix::ConstPtr& msg){
     ROS_INFO("POS : lat:%f, long:%f, alt:%f", msg->latitude, msg->longitude, msg->altitude);
-    publisher.publish(msg->latitude, msg->longitude, msg->altitude); //TODO implementar en zmq
+    publisher.publish(1, msg->latitude, msg->longitude, msg->altitude); //TODO implementar en zmq
 }
 
 void compass_callback(const std_msgs::Float64& msg){

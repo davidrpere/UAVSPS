@@ -21,10 +21,11 @@ int main (int argc, char *argv[])
 
     while(true){
         zmq::message_t message;
+        int id;
         double latitude, longitude, altitude;
         subscriber.recv(&message);
         std::istringstream iss(static_cast<char*>(message.data()));
-        iss >> latitude >> longitude >> altitude;
+        iss >> id >> latitude >> longitude >> altitude;
         std::cout << " lat: " << latitude
                     << " long: " << longitude
                     << " alt: " << altitude
