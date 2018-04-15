@@ -9,25 +9,24 @@ void client_waypoints_fotos::receive() {
 
     while(!waypoints_recibidos)
     {
-        zmq::message_t waypoints_update_from_gcs;
+        zmq::message_t update;
+        subscriber.recv(&update);
 
-        this->subscriber.recv(&waypoints_update_from_gcs);
-
-        std::istringstream waypoints_ss(static_cast<char *>
-                               (waypoints_update_from_gcs.data()));
-
-        //haced lo que queráis con ese istringstream, se convierte
-        //a lo que más os guste y se valida
-        //if(this->validar_waypoints(waypoints_ss)){
-        //    this->waypoints_recibidos = true;
-        //}else continue;
+		std::string strJson =std::string(static_cast<char*>(update.data()), update.size())	;
+		Json::Value waypoints_ss; // en waypoints_ss se guardan los Waypoints en formato JSON (no sé bien como se deben validar ni como me los van a mandar)
+    	Json::Reader reader;
+		reader.parse(strJson.c_str(),waypoints_ss);
+    	Json::FastWriter fastwriter;
+        if(this->validar_waypoints(waypoints_ss)){
+            this->waypoints_recibidos = true;
+        }else continue;
 
         usleep(5000000); //duermo 5 segundos
     }
 
 }
 
-bool client_waypoints_fotos::validar_waypoints(std::istringstream waypoints_ss) {
+bool client_waypoints_fotos::validar_waypoints(Json::Value waypoints_ss) {
     //método que valide que hemos recibido unos waypoints válidos
 
     //uno a uno validamos y si son buenos,
