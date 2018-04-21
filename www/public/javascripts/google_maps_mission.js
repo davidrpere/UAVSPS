@@ -1,5 +1,6 @@
 var map;
 var markerDron1;
+var markerDron2;
 
 function mission_map() {
     var lat = parseFloat(localStorage.getItem('center_lat'));
@@ -30,7 +31,7 @@ function mission_map() {
     });
 }
 
-function setRoute(route) {
+function setRoute(route, color) {
     var flightPlanCoordinates = [];
 
     for (var i = 0; i < route.length; i++) {
@@ -42,8 +43,10 @@ function setRoute(route) {
             position: latlngset,
             icon: {
                 path: google.maps.SymbolPath.CIRCLE,
-                scale: 5,
-                strokeColor:"#1976d2"
+                scale: 3,
+                strokeColor: color,
+                fillColor: color,
+                fillOpacity: 1.0
             }
         });
     }
@@ -51,7 +54,7 @@ function setRoute(route) {
     var flightPath = new google.maps.Polyline({
         path: flightPlanCoordinates,
         geodesic: true,
-        strokeColor: '#1976d2',
+        strokeColor: color,
         strokeOpacity: 1.0,
         strokeWeight: 2
     });
@@ -70,7 +73,7 @@ function setPhoto(lat, lng, path, alt) {
 
 
     var content = '<a class="image-popup-vertical-fit" href="' + path + '" ' +
-        'title="Coordenadas: (' + lat + ', ' + lng + ', ' + alt + ')">\n' +
+        'title="Coordenadas: (' + lat + ', ' + lng + '), altura: ' + alt + '.">\n' +
         '\t<img src="' + path + '" width="200"></a>';
 
     var infowindow = new google.maps.InfoWindow();
@@ -96,21 +99,43 @@ function setPhoto(lat, lng, path, alt) {
 }
 
 
-function setDronePosition(lat, lng) {
+function setDronePosition(lat, lng, id_dron) {
     var latlngset = new google.maps.LatLng(lat, lng);
 
-    if (markerDron1) markerDron1.setMap(null);
+    switch (id_dron){
+        case 1:
+            if (markerDron1) markerDron1.setMap(null);
 
-    var url_icon = 'images/navigation/drone' + heading + '.png';
+            var url_icon = 'images/navigation_dron1/drone' + heading_dron1 + '.png';
 
-    var icon = {
-        url: url_icon
-    };
+            var icon = {
+                url: url_icon
+            };
 
-    markerDron1 = new google.maps.Marker({
-        map: map,
-        position: latlngset,
-        draggable: false,
-        icon: icon
-    });
+            markerDron1 = new google.maps.Marker({
+                map: map,
+                position: latlngset,
+                draggable: false,
+                icon: icon
+            });
+            break;
+
+        case 2:
+            if (markerDron2) markerDron2.setMap(null);
+
+            var url_icon = 'images/navigation_dron2/drone' + heading_dron2 + '.png';
+
+            var icon = {
+                url: url_icon
+            };
+
+            markerDron2 = new google.maps.Marker({
+                map: map,
+                position: latlngset,
+                draggable: false,
+                icon: icon
+            });
+
+            break;
+    }
 }

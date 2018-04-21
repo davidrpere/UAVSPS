@@ -143,4 +143,3 @@ function midpoint_coordinates(lat1, lon1, lat2, lon2) {
 
     return {'lat': lat3, 'lon': lon3}
 }
-
