@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import utils
 from algoritmo import AlgoritmoMTSP
+import json
 
 import numpy as np
 
@@ -143,17 +144,36 @@ def main ():
 
     nodos, nodos_geometricas = utils.getNodosGrafo(northWest, northEast, southWest, southEast, altura_vuelo_uav, fraccion_solape, caracteristicas_sensor)
     
-    combinacion = {'n_nearest_rr': 7, 'n_nearest': 7, 'n_random': 35, 'n_generaciones': 10000, 'limite_generaciones_sin_cambio':1000, 'contar_pos_inicial_en_fitness':True}
+    combinacion = {'n_nearest_rr': 7, 'n_nearest': 7, 'n_random': 35, 'n_generaciones': 100, 'limite_generaciones_sin_cambio':1000, 'contar_pos_inicial_en_fitness':True}
 
     ga = AlgoritmoMTSP(nodos, drones)
     cromosoma_ganador, fitness = ga.getRutasSubOptimas(n_nearest_rr = combinacion['n_nearest_rr'], 
-                                                                n_nearest = combinacion['n_nearest'], 
-                                                                n_random=combinacion['n_random'], 
-                                                                n_generaciones = combinacion['n_generaciones'], 
-                                                                limite_generaciones_sin_cambio = combinacion['limite_generaciones_sin_cambio'],
-                                                                contar_pos_inicial_en_fitness = combinacion['contar_pos_inicial_en_fitness'],
-                                                                ruta_logs = './prueba/')
+                                                        n_nearest = combinacion['n_nearest'], 
+                                                        n_random=combinacion['n_random'], 
+                                                        n_generaciones = combinacion['n_generaciones'], 
+                                                        limite_generaciones_sin_cambio = combinacion['limite_generaciones_sin_cambio'],
+                                                        contar_pos_inicial_en_fitness = combinacion['contar_pos_inicial_en_fitness'])
+                                                        #ruta_logs = './prueba/')
     #computarAlgoritmoCombinaciones(nodos, drones, combinaciones_base, combinaciones)
+
+    info_json = convertirCromosomaEnWaipoints(cromosoma_ganador, nodos_geometricas, drones)
+
+    print()
+
+def convertirCromosomaEnWaipointsJson (cromosoma, nodos_geometricas,drones):
+    waypoints_drones_list = []
+    waypoints_drones = {}
+    last_index = 0
+    for id_dron, n_ciudades_dron in enumerate(cromosoma[-len(drones):]):
+        waipoints_dron = []
+        for ciudad in (cromosoma[last_index:last_index + n_ciudades_dron]):
+            waipoints_dron.append({'id_nodo': int(ciudad), 'latitud': float(nodos_geometricas[ciudad][0]), 'longitud': float(nodos_geometricas[ciudad][1])})
+        waypoints_drones_list.append({'id_dron': int(id_dron), 'waypoints': waipoints_dron})
+        last_index += n_ciudades_dron
+    return json.dumps(waypoints_drones_list)
+
+
+
 
     
 
