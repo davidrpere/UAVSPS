@@ -2,11 +2,64 @@ import numpy as np
 from geopy import distance
 import seaborn as sns # https://github.com/mwaskom/seaborn/issues/1307
 import pandas as pd
-import matplotlib.pyplot as plt
+import zmq
+import json
+import os
+
+context = zmq.Context()
+socket = context.socket(zmq.REP)
+socket.bind("tcp://*:7777")
 
 
-def getMeters (geoCoordA, geoCoordB):
-    '''    
+def getDatosWeb():
+    '''
+    Recibe valores de NodeJS.
+    '''
+
+    message = socket.recv_json()
+
+    json_norte_este = message['norte_este']
+    json_sur_oeste = message['sur_oeste']
+
+    norte_este = [json_norte_este['lat'], json_norte_este['lng']]
+    norte_oeste = [json_norte_este['lat'], json_sur_oeste['lng']]
+    sur_este = [json_sur_oeste['lat'], json_norte_este['lng']]
+    sur_oeste = [json_sur_oeste['lat'], json_sur_oeste['lng']]
+
+    altura_vuelo = float(message['altura_vuelo'])
+    fraccion_solape = float(message['fraccion_solape'])
+
+    posiciones_base = message['posiciones_base']
+
+    bases_drones = []
+    for base in posiciones_base:
+       bases_drones.append(base)
+
+
+    return bases_drones, altura_vuelo, fraccion_solape, norte_oeste, norte_este, sur_oeste, sur_este
+
+
+def enviarResultado(cromosoma, nodos_geometricas,drones):
+    waypoints_drones_list = []
+    waypoints_drones = {}
+    last_index = 0
+    for id_dron, n_ciudades_dron in enumerate(cromosoma[-len(drones):]):
+        waipoints_dron = []
+        for ciudad in (cromosoma[last_index:last_index + n_ciudades_dron]):
+            waipoints_dron.append({'id_nodo': int(ciudad), 'latitud': float(nodos_geometricas[ciudad][0]),
+                                   'longitud': float(nodos_geometricas[ciudad][1])})
+        waypoints_drones_list.append({'id_dron': int(id_dron), 'waypoints': waipoints_dron})
+        last_index += n_ciudades_dron
+
+
+    socket.send_string(json.dumps(waypoints_drones_list))
+
+    print("lista enviada")
+    return
+
+
+def getMeters(geoCoordA, geoCoordB):
+    '''
     Calcula la distancia en metros entre dos coordenadas geograficas.
 
     Entradas:
@@ -16,38 +69,37 @@ def getMeters (geoCoordA, geoCoordB):
     Salida:
         distance: (float), distancia en metros entre coordeadas geograficas.
     '''
-    return distance.vincenty(geoCoordA,geoCoordB).meters
+    return distance.vincenty(geoCoordA, geoCoordB).meters
 
 
-def cartToGeoCoord (x_meters, y_meters, origenCoordGeo):
+def cartToGeoCoord(x_meters, y_meters, origenCoordGeo):
     '''
     Convierte coordenadas cartesianas a coordenadas geometricas
 
     Entradas
-        x_meters: (float), indica cuantos metros en el eje x nos desplazamos con respecto al origen de 
+        x_meters: (float), indica cuantos metros en el eje x nos desplazamos con respecto al origen de
         coordenadas.
-        y_meters: (float), indica cuantos metros en el eje y nos desplazamos con respecto al origen de 
+        y_meters: (float), indica cuantos metros en el eje y nos desplazamos con respecto al origen de
         coordenadas.
-        origenCoordGeo: (lat,long), indica cual es el punto de origen de coordenadas, el cual sirve para 
-        relaccionar la posicion real de la zona a cubrir con la distancia en metros teorica hasta el 
+        origenCoordGeo: (lat,long), indica cual es el punto de origen de coordenadas, el cual sirve para
+        relaccionar la posicion real de la zona a cubrir con la distancia en metros teorica hasta el
         siguiente destino.
 
     Salidas
         latitud: (float), latitud real del punto desplazado los metros desados en el eje x
-        longitud: (float), longitud real del punto desplazado los metros desados en el eje 
+        longitud: (float), longitud real del punto desplazado los metros desados en el eje
     '''
     geoCoord = distance.vincenty(meters=x_meters).destination(origenCoordGeo, 90)
     geoCoord = distance.vincenty(meters=y_meters).destination(geoCoord, 0)
-    
+
     return geoCoord.latitude, geoCoord.longitude
 
 
-def coordenadasNodosToGeograficas (nodos):
+def coordenadasNodosToGeograficas(nodos):
     pass
 
 
-
-def calcularFootprint (altura_vuelo_uav, ancho_sensor, distancia_focal, angulo_inclinacion):
+def calcularFootprint(altura_vuelo_uav, ancho_sensor, distancia_focal, angulo_inclinacion):
     '''
     Calcula el numero de metros que recoge la camara del UAV.
 
@@ -71,11 +123,11 @@ def calcularFootprint (altura_vuelo_uav, ancho_sensor, distancia_focal, angulo_i
     return altura_vuelo_uav * (ancho_sensor / distancia_focal)
 
 
-def calcularNodosGrafo (divisiones_x, divisiones_y):
+def calcularNodosGrafo(divisiones_x, divisiones_y):
     '''
     Devuelve una lista con las coordenadas de cada nodo del grafo.
     '''
-    #return [(pos_x, pos_y) for pos_x in divisiones_x for pos_y in divisiones_y]
+    # return [(pos_x, pos_y) for pos_x in divisiones_x for pos_y in divisiones_y]
     nodos = []
     id = 0
     for pos_x in divisiones_x:
@@ -87,15 +139,15 @@ def calcularNodosGrafo (divisiones_x, divisiones_y):
     return nodos
 
 
-def distancia (pos1, pos2):
+def distancia(pos1, pos2):
     '''
     Devuelve la distancia entre dos vectores
     '''
     # TODO: solucion temporal -> buscar forma de calculo mas rapida
-    return np.sqrt(np.sum(np.power((np.array(pos1)-np.array(pos2)),2)))
+    return np.sqrt(np.sum(np.power((np.array(pos1) - np.array(pos2)), 2)))
 
 
-def calcularGrafoEdges (nodos):
+def calcularGrafoEdges(nodos):
     '''
     Construye el grafo.
 
@@ -115,12 +167,13 @@ def calcularGrafoEdges (nodos):
     list_edges = []
     n_filas, n_columnas = len(nodos), len(nodos[0])
     for n_fila in range(n_filas):
-        for n_columna in range (n_columnas):
+        for n_columna in range(n_columnas):
 
             grafo[nodos[n_fila][n_columna][0]] = nodos[n_fila][n_columna][1]
 
-            for i, j in [[n_fila + 1, n_columna], [n_fila - 1, n_columna], [n_fila, n_columna + 1], [n_fila, n_columna - 1]]:
-                if i < 0 or j < 0 or i >= n_filas or j >= n_columnas: # No existe el nodo
+            for i, j in [[n_fila + 1, n_columna], [n_fila - 1, n_columna], [n_fila, n_columna + 1],
+                         [n_fila, n_columna - 1]]:
+                if i < 0 or j < 0 or i >= n_filas or j >= n_columnas:  # No existe el nodo
                     continue
                 pos_extremo1 = nodos[n_fila][n_columna][1]
                 pos_extremo2 = nodos[i][j][1]
@@ -129,7 +182,7 @@ def calcularGrafoEdges (nodos):
     return grafo, np.array(list_edges)
 
 
-def getNodos (divisiones_x, divisiones_y, origenCoord):
+def getNodos(divisiones_x, divisiones_y, origenCoord):
     '''
     Construye el grafo.
 
@@ -155,32 +208,32 @@ def getNodos (divisiones_x, divisiones_y, origenCoord):
     return nodos_cartesianas, nodos_geometricas
 
 
-def escalar (valor, old_min, old_max, new_min, new_max):
+def escalar(valor, old_min, old_max, new_min, new_max):
     '''
     '''
-    return ((new_max - new_min) * (valor - old_min) / (old_max - old_min)) + new_min    
+    return ((new_max - new_min) * (valor - old_min) / (old_max - old_min)) + new_min
 
 
-def calcularDivisionesEje (lado, footprint, fraccion_solape):
+def calcularDivisionesEje(lado, footprint, fraccion_solape):
     '''
     '''
-     
+
     num_filas = int(np.ceil(lado / (footprint * (1 - fraccion_solape))))
-    distancia = lado/num_filas
+    distancia = lado / num_filas
 
-    return [i * distancia - (distancia / 2) for i in range (1, num_filas + 1)]
+    return [i * distancia - (distancia / 2) for i in range(1, num_filas + 1)]
 
 
-def getNodosGrafo (northWest, northEast, southWest, southEast, altura_vuelo_uav, fraccion_solape, caracteristicas_sensor): 
-    # def calcularGrafo (x, y, altura_vuelo_uav, caracteristicas_sensor):
-    x = getMeters(southWest,southEast)
-    y = getMeters(southWest,northWest)
+def getNodosGrafo(northWest, northEast, southWest, southEast, altura_vuelo_uav, fraccion_solape, caracteristicas_sensor):
+    x = getMeters(southWest, southEast)
+    y = getMeters(southWest, northWest)
 
-    footprint = calcularFootprint (altura_vuelo_uav, caracteristicas_sensor['ancho_sensor'], 
-                                   caracteristicas_sensor['distancia_focal'], caracteristicas_sensor['angulo_inclinacion'])
+    footprint = calcularFootprint(altura_vuelo_uav, caracteristicas_sensor['ancho_sensor'],
+                                  caracteristicas_sensor['distancia_focal'],
+                                  caracteristicas_sensor['angulo_inclinacion'])
 
-    divisiones_x = calcularDivisionesEje (x, footprint, fraccion_solape)
-    divisiones_y = calcularDivisionesEje (y, footprint, fraccion_solape)
+    divisiones_x = calcularDivisionesEje(x, footprint, fraccion_solape)
+    divisiones_y = calcularDivisionesEje(y, footprint, fraccion_solape)
 
     nodos_cartesianas, nodos_geometricas = getNodos(divisiones_x, divisiones_y, southWest)
 
@@ -197,45 +250,22 @@ def dibujarNodos (grafo, aspect, size = 9):
     return grid
 
 
-def dibujarNodosEnImagen (grafo, x, y, ruta_img = './area.png', size = 9):
-    img = plt.imread(ruta_img)
-    new_y, new_x, _ = img.shape
-
-    old_min = np.array([0,0])
-    new_min = np.array([0,0])
-
-    old_max = np.array([x,y])
-    new_max = np.array([new_x, new_y])
-
-    new_grafo = {}
-    for item in grafo.items():
-        new_grafo[item[0]] = escalar(item[1], old_min, old_max, new_min, new_max)
-
-
-    print(pd.DataFrame(grafo, ['x', 'y']).transpose())
-
-    print('\n\n')
-    print(pd.DataFrame(new_grafo, ['x', 'y']).transpose())
-
-
-    grid = dibujarNodos(new_grafo, x/y)
-    plt.imshow(img, origin='lower')
-
-    return grid, old_min, old_max, new_min, new_max
-
-
-def dibujarEdges (grid, color='k', style = '--'):
-    for edge in edges:
-        grid.axes[0][0].plot((edge[0][0], edge[1][0]), (edge[0][1], edge[1][1]), color+style)
-
-        pto_medio = (np.array(edge[0]) + np.array(edge[1]))/2 + np.array([1,1])
-        grid.axes[0][0].text(pto_medio[0], pto_medio[1], str(int(edge[2])), transform=grid.axes[0][0].transData)
-
-    return grid
-
-
-def dibujarGrafo (grafo, edges, aspect, size = 9):
-    grid = dibujarNodos(grafo, aspect, size)
-    dibujarEdges(grid)
-    
-    return grid
+def getRutaLogs (combinacion):
+    '''
+    Crea ruta para guardar logs a partir de parametros ajustables del algoritmo.
+    '''
+    i = 0
+    ruta_logs = './'
+    while os.path.exists(ruta_logs):
+        ruta_logs = './logs/pob{},nnrr{},nn{},r{},gen{},lim{},posinic{}_v{}/'.format(
+                    str(combinacion['n_nearest_rr'] + combinacion['n_nearest'] + combinacion['n_random']),
+                    str(combinacion['n_nearest_rr']),
+                    str(combinacion['n_nearest']),
+                    str(combinacion['n_random']),
+                    str(combinacion['n_generaciones']),
+                    str(combinacion['limite_generaciones_sin_cambio']),
+                    str(combinacion['contar_pos_inicial_en_fitness']),
+                    i)
+        i += 1
+    os.makedirs(ruta_logs)
+    return ruta_logs

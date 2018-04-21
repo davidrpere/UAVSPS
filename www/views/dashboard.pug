@@ -13,18 +13,16 @@ html
                 a(class="brand-logo center", href="/") HORUS
                 a(class="sidenav-trigger show-on-large", data-target="mobile-demo", href="#")
                     i(class="material-icons") menu
-                a(v-if='seen', class="btn-floating btn-large halfway-fab waves-effect waves-light red", id="btn-floating-stop", v-on:click="stop_mission")
-                    i(class="material-icons") stop
 
             ul(class="sidenav", id="mobile-demo")
                 li
                     a(href="/historial") Historial
 
-        div(class='row')
-            input(v-if="seen", id="pac-input", class="controls", type="text", placeholder="Buscar")
+        div(v-if="seen", class='row', id="row_map")
+            input(id="pac-input", class="controls", type="text", placeholder="Buscar")
             div(id="map")
 
-        div(v-if='seen', class="fixed-action-btn", id="btn-float")
+        div(v-if="seen", class="fixed-action-btn", id="btn-float")
             a(class="btn-floating btn-large red")
                 i(class="large material-icons") mode_edit
             ul
@@ -35,14 +33,14 @@ html
                     a(class="btn-floating yellow darken-2", v-on:click='remove_area')
                         i(class="material-icons") layers_clear
                 li
-                    a(class="btn-floating orange darken-2 modal-trigger", href="#modal1")
+                    a(class="btn-floating orange darken-2 modal-trigger", href="#form_params")
                         i(class="material-icons") assignment
                 li
-                    a(class="btn-floating green darken-2", v-on:click='start_mission')
+                    a(class="btn-floating green darken-2", v-on:click='start_mission', href='/mission')
                         i(class="material-icons") play_arrow
 
 
-        div(class="modal", id="modal1")
+        div(class="modal", id="form_params")
             div(class="modal-content")
                 div(class="row")
                     form(class="col s12")
@@ -74,9 +72,40 @@ html
                                 label Altura de vuelo (metros)
                                 p(class="range-field")
                                     input(type="range", min="1", max="20", value="1", name="altura_vuelo")
-
             div(class="modal-footer")
-                a(class="modal-action modal-close waves-effect waves-green btn-flat", href="#!") Continuar
+                a(class="modal-action modal-close waves-effect waves-green btn-flat") Continuar
+
+
+        div(v-if="seen", class="preloader-wrapper big active", id="load")
+            div(class="spinner-layer spinner-blue")
+                div(class="circle-clipper left")
+                    div(class="circle")
+                div(class="gap-patch")
+                    div(class="circle")
+                div(class="circle-clipper right")
+                    div(class="circle")
+            div(class="spinner-layer spinner-red")
+                div(class="circle-clipper left")
+                    div(class="circle")
+                div(class="gap-patch")
+                    div(class="circle")
+                div(class="circle-clipper right")
+                    div(class="circle")
+            div(class="spinner-layer spinner-yellow")
+                div(class="circle-clipper left")
+                    div(class="circle")
+                div(class="gap-patch")
+                    div(class="circle")
+                div(class="circle-clipper right")
+                    div(class="circle")
+            div(class="spinner-layer spinner-green")
+                div(class="circle-clipper left")
+                    div(class="circle")
+                div(class="gap-patch")
+                    div(class="circle")
+                div(class="circle-clipper right")
+                    div(class="circle")
+
 
         script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js",
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN", crossorigin="anonymous")
@@ -84,10 +113,10 @@ html
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q", crossorigin="anonymous")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js")
         script(src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js")
-        script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.dev.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js")
         script(src="https://unpkg.com/sweetalert/dist/sweetalert.min.js")
-        script(src="/javascripts/vue_dashboard.js")
+        script(src="/javascripts/dashboard.js")
         script(src="/javascripts/magnific_popup.js")
-        script(src="/javascripts/google_maps.js")
+        script(src="/javascripts/google_maps_dashboard.js")
         script(async, defer, src="https://maps.googleapis.com/maps/api/js?" +
         "key=AIzaSyD70tPAmyyOvL1GnSQY8y3w8SU2CY8ZP9Q&libraries=places&callback=initAutocomplete")

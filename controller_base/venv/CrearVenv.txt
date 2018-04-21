@@ -1,1 +1,0 @@
-conda env create -f uavpsp.yml -p [ruta hacia el entorno vitual]

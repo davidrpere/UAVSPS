@@ -11,10 +11,17 @@ body {
   z-index: 999997;
 }
 
-#btn-float-stop{
-  z-index: 999997;
-  right: 50%;
+.preloader-wrapper.big {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
 }
+
 
 :focus{
   outline: none;
