@@ -123,32 +123,32 @@ mavros/fast:
 	$(MAKE) -f CMakeFiles/mavros.dir/build.make CMakeFiles/mavros.dir/build
 .PHONY : mavros/fast
 
-torpi/src/main.o: torpi/src/main.cpp.o
+to_rpi_guided/src/main.o: to_rpi_guided/src/main.cpp.o
 
-.PHONY : torpi/src/main.o
+.PHONY : to_rpi_guided/src/main.o
 
 # target to build an object file
-torpi/src/main.cpp.o:
-	$(MAKE) -f CMakeFiles/mavros.dir/build.make CMakeFiles/mavros.dir/torpi/src/main.cpp.o
-.PHONY : torpi/src/main.cpp.o
+to_rpi_guided/src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/mavros.dir/build.make CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o
+.PHONY : to_rpi_guided/src/main.cpp.o
 
-torpi/src/main.i: torpi/src/main.cpp.i
+to_rpi_guided/src/main.i: to_rpi_guided/src/main.cpp.i
 
-.PHONY : torpi/src/main.i
+.PHONY : to_rpi_guided/src/main.i
 
 # target to preprocess a source file
-torpi/src/main.cpp.i:
-	$(MAKE) -f CMakeFiles/mavros.dir/build.make CMakeFiles/mavros.dir/torpi/src/main.cpp.i
-.PHONY : torpi/src/main.cpp.i
+to_rpi_guided/src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/mavros.dir/build.make CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.i
+.PHONY : to_rpi_guided/src/main.cpp.i
 
-torpi/src/main.s: torpi/src/main.cpp.s
+to_rpi_guided/src/main.s: to_rpi_guided/src/main.cpp.s
 
-.PHONY : torpi/src/main.s
+.PHONY : to_rpi_guided/src/main.s
 
 # target to generate assembly for a file
-torpi/src/main.cpp.s:
-	$(MAKE) -f CMakeFiles/mavros.dir/build.make CMakeFiles/mavros.dir/torpi/src/main.cpp.s
-.PHONY : torpi/src/main.cpp.s
+to_rpi_guided/src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/mavros.dir/build.make CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.s
+.PHONY : to_rpi_guided/src/main.cpp.s
 
 # Help Target
 help:
@@ -159,9 +159,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... mavros"
-	@echo "... torpi/src/main.o"
-	@echo "... torpi/src/main.i"
-	@echo "... torpi/src/main.s"
+	@echo "... to_rpi_guided/src/main.o"
+	@echo "... to_rpi_guided/src/main.i"
+	@echo "... to_rpi_guided/src/main.s"
 .PHONY : help
 
 

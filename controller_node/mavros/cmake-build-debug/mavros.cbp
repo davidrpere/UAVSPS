@@ -86,7 +86,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/torpi/src/main.cpp">
+		<Unit filename="/Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/to_rpi_guided/src/main.cpp">
 			<Option target="mavros"/>
 		</Unit>
 		<Unit filename="/Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/CMakeLists.txt">

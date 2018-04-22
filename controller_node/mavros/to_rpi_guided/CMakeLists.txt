@@ -41,7 +41,8 @@ add_executable(uavsps_guided
         src/client_waypoints_fotos.h
         src/apm_modes.h
         src/publisher_gps_fotos.cpp
-        src/publisher_gps_fotos.h)
+        src/publisher_gps_fotos.h
+        src/structs.h)
 
 target_link_libraries(uavsps_guided ${catkin_LIBRARIES})
 

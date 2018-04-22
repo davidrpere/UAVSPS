@@ -8,6 +8,6 @@ include_directories(ros/kinetic/include)
 FIND_PACKAGE( Boost 1.66 COMPONENTS program_options REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
-add_executable(mavros torpi/src/main.cpp)
+add_executable(mavros to_rpi_guided/src/main.cpp)
 
 TARGET_LINK_LIBRARIES( mavros LINK_PUBLIC ${Boost_LIBRARIES} )

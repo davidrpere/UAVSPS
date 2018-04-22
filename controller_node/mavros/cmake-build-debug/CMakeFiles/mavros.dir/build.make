@@ -57,38 +57,38 @@ include CMakeFiles/mavros.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/mavros.dir/flags.make
 
-CMakeFiles/mavros.dir/torpi/src/main.cpp.o: CMakeFiles/mavros.dir/flags.make
-CMakeFiles/mavros.dir/torpi/src/main.cpp.o: ../torpi/src/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/mavros.dir/torpi/src/main.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mavros.dir/torpi/src/main.cpp.o -c /Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/torpi/src/main.cpp
+CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o: CMakeFiles/mavros.dir/flags.make
+CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o: ../to_rpi_guided/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o -c /Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/to_rpi_guided/src/main.cpp
 
-CMakeFiles/mavros.dir/torpi/src/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mavros.dir/torpi/src/main.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/torpi/src/main.cpp > CMakeFiles/mavros.dir/torpi/src/main.cpp.i
+CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/to_rpi_guided/src/main.cpp > CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.i
 
-CMakeFiles/mavros.dir/torpi/src/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mavros.dir/torpi/src/main.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/torpi/src/main.cpp -o CMakeFiles/mavros.dir/torpi/src/main.cpp.s
+CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/drodriguez/Documents/GitHub/UAVSPS/controller_node/mavros/to_rpi_guided/src/main.cpp -o CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.s
 
-CMakeFiles/mavros.dir/torpi/src/main.cpp.o.requires:
+CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o.requires:
 
-.PHONY : CMakeFiles/mavros.dir/torpi/src/main.cpp.o.requires
+.PHONY : CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o.requires
 
-CMakeFiles/mavros.dir/torpi/src/main.cpp.o.provides: CMakeFiles/mavros.dir/torpi/src/main.cpp.o.requires
-	$(MAKE) -f CMakeFiles/mavros.dir/build.make CMakeFiles/mavros.dir/torpi/src/main.cpp.o.provides.build
-.PHONY : CMakeFiles/mavros.dir/torpi/src/main.cpp.o.provides
+CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o.provides: CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o.requires
+	$(MAKE) -f CMakeFiles/mavros.dir/build.make CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o.provides.build
+.PHONY : CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o.provides
 
-CMakeFiles/mavros.dir/torpi/src/main.cpp.o.provides.build: CMakeFiles/mavros.dir/torpi/src/main.cpp.o
+CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o.provides.build: CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o
 
 
 # Object files for target mavros
 mavros_OBJECTS = \
-"CMakeFiles/mavros.dir/torpi/src/main.cpp.o"
+"CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o"
 
 # External object files for target mavros
 mavros_EXTERNAL_OBJECTS =
 
-mavros: CMakeFiles/mavros.dir/torpi/src/main.cpp.o
+mavros: CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o
 mavros: CMakeFiles/mavros.dir/build.make
 mavros: /opt/local/lib/libboost_program_options-mt.dylib
 mavros: CMakeFiles/mavros.dir/link.txt
@@ -100,7 +100,7 @@ CMakeFiles/mavros.dir/build: mavros
 
 .PHONY : CMakeFiles/mavros.dir/build
 
-CMakeFiles/mavros.dir/requires: CMakeFiles/mavros.dir/torpi/src/main.cpp.o.requires
+CMakeFiles/mavros.dir/requires: CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o.requires
 
 .PHONY : CMakeFiles/mavros.dir/requires
 

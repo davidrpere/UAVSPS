@@ -16,7 +16,7 @@ macro(genmsg_py)
     rosbuild_gendeps(${PROJECT_NAME} ${_msg})
   
 
-    set(_output_py ../../../../../torpi/src/${PROJECT_NAME}/msg/_${_msg})
+    set(_output_py ../../../../../to_rpi_guided/src/${PROJECT_NAME}/msg/_${_msg})
     string(REPLACE ".msg" ".py" _output_py ${_output_py})
   
     # Add the rule to build the .py from the .msg.
@@ -30,7 +30,7 @@ macro(genmsg_py)
     # Set up to create the __init__.py file that will import the .py
     # files created by the above loop.  It can't run until those files are
     # generated, so it depends on them.
-    set(_output_py ../../../../../torpi/src/${PROJECT_NAME}/msg/__init__.py)
+    set(_output_py ../../../../../to_rpi_guided/src/${PROJECT_NAME}/msg/__init__.py)
     add_custom_command(OUTPUT ${_output_py}
                        COMMAND ${genmsg_py_exe} --initpy ${_inlist}
                        DEPENDS ${_autogen})
@@ -46,7 +46,7 @@ macro(genmsg_py)
 
     # Also set up to clean the src/<project>/msg directory
     get_directory_property(_old_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
-    list(APPEND _old_clean_files ../../../../../torpi/src/${PROJECT_NAME}/msg)
+    list(APPEND _old_clean_files ../../../../../to_rpi_guided/src/${PROJECT_NAME}/msg)
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${_old_clean_files}")
   endif(_autogen)
 endmacro(genmsg_py)
@@ -70,7 +70,7 @@ macro(gensrv_py)
     rosbuild_gendeps(${PROJECT_NAME} ${_srv})
   
 
-    set(_output_py ../../../../../torpi/src/${PROJECT_NAME}/srv/_${_srv})
+    set(_output_py ../../../../../to_rpi_guided/src/${PROJECT_NAME}/srv/_${_srv})
     string(REPLACE ".srv" ".py" _output_py ${_output_py})
   
     # Add the rule to build the .py from the .srv
@@ -84,7 +84,7 @@ macro(gensrv_py)
     # Set up to create the __init__.py file that will import the .py
     # files created by the above loop.  It can't run until those files are
     # generated, so it depends on them.
-    set(_output_py ../../../../../torpi/src/${PROJECT_NAME}/srv/__init__.py)
+    set(_output_py ../../../../../to_rpi_guided/src/${PROJECT_NAME}/srv/__init__.py)
     add_custom_command(OUTPUT ${_output_py}
                        COMMAND ${gensrv_py_exe} --initpy ${_inlist}
                        DEPENDS ${_autogen})
@@ -100,7 +100,7 @@ macro(gensrv_py)
 
     # Also set up to clean the src/<project>/srv directory
     get_directory_property(_old_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
-    list(APPEND _old_clean_files ../../../../../torpi/src/${PROJECT_NAME}/srv)
+    list(APPEND _old_clean_files ../../../../../to_rpi_guided/src/${PROJECT_NAME}/srv)
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${_old_clean_files}")
   endif(_autogen)
 endmacro(gensrv_py)

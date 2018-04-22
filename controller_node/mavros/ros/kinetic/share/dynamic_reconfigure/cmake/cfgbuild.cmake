@@ -57,7 +57,7 @@ macro(gencfg_cpp)
       set(_output_dox ${PROJECT_SOURCE_DIR}/docs/${_cfg_bare}Config.dox)
       set(_output_wikidoc ${PROJECT_SOURCE_DIR}/docs/${_cfg_bare}Config.wikidoc)
       set(_output_usage ${PROJECT_SOURCE_DIR}/docs/${_cfg_bare}Config-usage.dox)
-      set(_output_py ../../../../../torpi/src/${PROJECT_NAME}/cfg/${_cfg_bare}Config.py)
+      set(_output_py ../../../../../to_rpi_guided/src/${PROJECT_NAME}/cfg/${_cfg_bare}Config.py)
 
       # Add the rule to build the .h the .cfg and the .msg
       # FIXME Horrible hack. Can't get CMAKE to add dependencies for anything

@@ -16,30 +16,26 @@ class publisher_gps_fotos {
 
 public:
 
-    publisher_gps_fotos(std::string identity, std::string ip_gcs)
+    publisher_gps_fotos(std::string identity, std::string ip_gcs, int contexto)
             : identity(identity),
               ip_gcs(ip_gcs),
-              context(1),
-              publisher(this->context,ZMQ_PUB)
+              context(contexto),
+              publisher(this->context,ZMQ_PUB),
+              publisher_fotos(this->context, ZMQ_REQ)
     {
         std::cout << "Constructor server gps fotos" << std::endl;
-        this->context = zmq::context_t(1);
-        this->publisher = zmq::socket_t(this->context, ZMQ_PUB);
         this->publisher.bind(ip_gcs.c_str());
+        this->publisher_fotos.connect("tcp://127.0.0.1:8081");
         std::cout << "Conectado publisher al socket" << std::endl;
-
-        //pthread create (thread-parameters, blabla, this->run(), blabla)
     }
 
-    void publish(int id,double latitud, double longitud, double altitud);
+    void publish(double latitud, double longitud, double altitud);
 
-    void publish();
+    void publish(int heading);
 
     //void publish(blabla imagen);
 
-    void run();
-    //Hay que lanzarlo en un hilo
-    //Tiene que poder acceder a las variables privadas de la clase
+    void publish_foto(int id, double lat, double lon, double alt);
 
 private:
 
@@ -51,6 +47,6 @@ private:
 
     zmq::context_t context;
     zmq::socket_t publisher;
-
+    zmq::socket_t publisher_fotos;
 
 };

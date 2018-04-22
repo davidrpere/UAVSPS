@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/mavros.dir/torpi/src/main.cpp.o"
+  "CMakeFiles/mavros.dir/to_rpi_guided/src/main.cpp.o"
   "mavros.pdb"
   "mavros"
 )

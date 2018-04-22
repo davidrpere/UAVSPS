@@ -12,23 +12,26 @@
 #include <zmq.hpp>
 #include "zhelpers.hpp"
 
+#include "structs.h"
+
 class client_waypoints_fotos {
 
 public:
 
-    client_waypoints_fotos(std::string identity, std::string ip_gcs)
+    client_waypoints_fotos(std::string identity, std::string puerto_waypoints)
             : identity(identity),
               ip_gcs(ip_gcs),
               context(1),
-              subscriber(this->context,ZMQ_SUB)
+              subscriber(this->context,ZMQ_REP)
             {
                 std::cout << "Constructor client waypoints fotos" << std::endl;
                 //me conecto al ip+puerto del gcs porque es donde va a publicar
                 //todos los waypoints
-                this->subscriber.connect("tcp://192.168.0.10:5558");
+                //this->subscriber.connect("tcp://192.168.0.10:5558");
+                subscriber.bind (puerto_waypoints);
                 //filtro por mi "identidad" para coger sólo los que me tocan
-                const char *filter = identity.c_str();
-                this->subscriber.setsockopt(ZMQ_SUBSCRIBE,filter,strlen(filter));
+                //const char *filter = identity.c_str();
+                //this->subscriber.setsockopt(ZMQ_SUBSCRIBE,filter,strlen(filter));
                 std::cout << "Conectado receiver al socket con filtro" << std::endl;
             }
 
@@ -38,7 +41,7 @@ public:
 
     //bool waypoints_listos
 
-    std::vector<std::tuple<float,float>> get_waypoints();
+    std::vector<waypoint_str> get_waypoints();
 
 private:
 
