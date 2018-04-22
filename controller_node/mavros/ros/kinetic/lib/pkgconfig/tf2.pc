@@ -1,0 +1,8 @@
+prefix=/opt/ros/kinetic
+
+Name: tf2
+Description: Description of tf2
+Version: 0.5.16
+Cflags: -I/opt/ros/kinetic/include -I/usr/include
+Libs: -L/opt/ros/kinetic/lib -ltf2 -l:/usr/lib/arm-linux-gnueabihf/libconsole_bridge.so
+Requires: geometry_msgs tf2_msgs rostime
