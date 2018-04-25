@@ -17,7 +17,9 @@ caracteristicas_sensor = {'ancho_sensor': 1,
 
 def main():
     posiciones_base, altura_vuelo, fraccion_solape, norte_oeste, norte_este, sur_oeste, sur_este = utils.getDatosWeb()
+
     drones = [UAV(i, caracteristicas_sensor, posicion_base) for i, posicion_base in enumerate(posiciones_base)]
+
     nodos, nodos_geometricas = utils.getNodosGrafo(norte_oeste, norte_este, sur_oeste, sur_este, altura_vuelo,
                                                    fraccion_solape, caracteristicas_sensor)
     ga = AlgoritmoMTSP(nodos, drones)
@@ -30,7 +32,7 @@ def main():
                                                        contar_pos_inicial_en_fitness=combinacion[
                                                            'contar_pos_inicial_en_fitness'],
                                                        ruta_logs=utils.getRutaLogs(combinacion))
-    	
+
     #time.sleep(10)
     utils.enviarResultado(cromosoma_ganador, nodos_geometricas, drones)
 

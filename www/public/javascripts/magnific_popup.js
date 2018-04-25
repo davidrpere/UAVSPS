@@ -1,5 +1,5 @@
 // Magnific Popup v1.1.0 by Dmitry Semenov
-// http://bit.ly/magnific-popup#build=image
+// http://bit.ly/magnific-popup#build=inline+image+ajax+iframe+gallery+retina+imagezoom
 (function (a) {
     typeof define == "function" && define.amd ? define(["jquery"], a) : typeof exports == "object" ? a(require("jquery")) : a(window.jQuery || window.Zepto)
 })(function (a) {
@@ -236,7 +236,60 @@
         } else n.isOpen && n[b].apply(n, Array.prototype.slice.call(arguments, 1)); else b = a.extend(!0, {}, b), p ? c.data("magnificPopup", b) : c[0].magnificPopup = b, n.addGroup(c, b);
         return c
     };
-    var C, D = function (b) {
+    var C = "inline", D, E, F, G = function () {
+        F && (E.after(F.addClass(D)).detach(), F = null)
+    };
+    a.magnificPopup.registerModule(C, {
+        options: {hiddenClass: "hide", markup: "", tNotFound: "Content not found"},
+        proto: {
+            initInline: function () {
+                n.types.push(C), w(b + "." + C, function () {
+                    G()
+                })
+            }, getInline: function (b, c) {
+                G();
+                if (b.src) {
+                    var d = n.st.inline, e = a(b.src);
+                    if (e.length) {
+                        var f = e[0].parentNode;
+                        f && f.tagName && (E || (D = d.hiddenClass, E = x(D), D = "mfp-" + D), F = e.after(E).detach().removeClass(D)), n.updateStatus("ready")
+                    } else n.updateStatus("error", d.tNotFound), e = a("<div>");
+                    return b.inlineElement = e, e
+                }
+                return n.updateStatus("ready"), n._parseMarkup(c, {}, b), c
+            }
+        }
+    });
+    var H = "ajax", I, J = function () {
+        I && a(document.body).removeClass(I)
+    }, K = function () {
+        J(), n.req && n.req.abort()
+    };
+    a.magnificPopup.registerModule(H, {
+        options: {
+            settings: null,
+            cursor: "mfp-ajax-cur",
+            tError: '<a href="%url%">The content</a> could not be loaded.'
+        }, proto: {
+            initAjax: function () {
+                n.types.push(H), I = n.st.ajax.cursor, w(b + "." + H, K), w("BeforeChange." + H, K)
+            }, getAjax: function (b) {
+                I && a(document.body).addClass(I), n.updateStatus("loading");
+                var c = a.extend({
+                    url: b.src, success: function (c, d, e) {
+                        var f = {data: c, xhr: e};
+                        y("ParseAjax", f), n.appendContent(a(f.data), H), b.finished = !0, J(), n._setFocus(), setTimeout(function () {
+                            n.wrap.addClass(k)
+                        }, 16), n.updateStatus("ready"), y("AjaxContentAdded")
+                    }, error: function () {
+                        J(), b.finished = b.loadError = !0, n.updateStatus("error", n.st.ajax.tError.replace("%url%", b.src))
+                    }
+                }, n.st.ajax.settings);
+                return n.req = a.ajax(c), ""
+            }
+        }
+    });
+    var L, M = function (b) {
         if (b.data && b.data.title !== undefined) return b.data.title;
         var c = n.st.image.titleSrc;
         if (c) {
@@ -268,15 +321,15 @@
                     n.isLowIE && (b = parseInt(a.img.css("padding-top"), 10) + parseInt(a.img.css("padding-bottom"), 10)), a.img.css("max-height", n.wH - b)
                 }
             }, _onImageHasSize: function (a) {
-                a.img && (a.hasSize = !0, C && clearInterval(C), a.isCheckingImgSize = !1, y("ImageHasSize", a), a.imgHidden && (n.content && n.content.removeClass("mfp-loading"), a.imgHidden = !1))
+                a.img && (a.hasSize = !0, L && clearInterval(L), a.isCheckingImgSize = !1, y("ImageHasSize", a), a.imgHidden && (n.content && n.content.removeClass("mfp-loading"), a.imgHidden = !1))
             }, findImageSize: function (a) {
                 var b = 0, c = a.img[0], d = function (e) {
-                    C && clearInterval(C), C = setInterval(function () {
+                    L && clearInterval(L), L = setInterval(function () {
                         if (c.naturalWidth > 0) {
                             n._onImageHasSize(a);
                             return
                         }
-                        b > 200 && clearInterval(C), b++, b === 3 ? d(10) : b === 40 ? d(50) : b === 100 && d(500)
+                        b > 200 && clearInterval(L), b++, b === 3 ? d(10) : b === 40 ? d(50) : b === 100 && d(500)
                     }, e)
                 };
                 d(1)
@@ -291,14 +344,14 @@
                     i.className = "mfp-img", b.el && b.el.find("img").length && (i.alt = b.el.find("img").attr("alt")), b.img = a(i).on("load.mfploader", e).on("error.mfploader", f), i.src = b.src, h.is("img") && (b.img = b.img.clone()), i = b.img[0], i.naturalWidth > 0 ? b.hasSize = !0 : i.width || (b.hasSize = !1)
                 }
                 return n._parseMarkup(c, {
-                    title: D(b),
+                    title: M(b),
                     img_replaceWith: b.img
-                }, b), n.resizeImage(), b.hasSize ? (C && clearInterval(C), b.loadError ? (c.addClass("mfp-loading"), n.updateStatus("error", g.tError.replace("%url%", b.src))) : (c.removeClass("mfp-loading"), n.updateStatus("ready")), c) : (n.updateStatus("loading"), b.loading = !0, b.hasSize || (b.imgHidden = !0, c.addClass("mfp-loading"), n.findImageSize(b)), c)
+                }, b), n.resizeImage(), b.hasSize ? (L && clearInterval(L), b.loadError ? (c.addClass("mfp-loading"), n.updateStatus("error", g.tError.replace("%url%", b.src))) : (c.removeClass("mfp-loading"), n.updateStatus("ready")), c) : (n.updateStatus("loading"), b.loading = !0, b.hasSize || (b.imgHidden = !0, c.addClass("mfp-loading"), n.findImageSize(b)), c)
             }
         }
     });
-    var E, F = function () {
-        return E === undefined && (E = document.createElement("p").style.MozTransform !== undefined), E
+    var N, O = function () {
+        return N === undefined && (N = document.createElement("p").style.MozTransform !== undefined), N
     };
     a.magnificPopup.registerModule("zoom", {
         options: {
@@ -361,7 +414,132 @@
                 var d = c.offset(), e = parseInt(c.css("padding-top"), 10), f = parseInt(c.css("padding-bottom"), 10);
                 d.top -= a(window).scrollTop() - e;
                 var g = {width: c.width(), height: (p ? c.innerHeight() : c[0].offsetHeight) - f - e};
-                return F() ? g["-moz-transform"] = g.transform = "translate(" + d.left + "px," + d.top + "px)" : (g.left = d.left, g.top = d.top), g
+                return O() ? g["-moz-transform"] = g.transform = "translate(" + d.left + "px," + d.top + "px)" : (g.left = d.left, g.top = d.top), g
+            }
+        }
+    });
+    var P = "iframe", Q = "//about:blank", R = function (a) {
+        if (n.currTemplate[P]) {
+            var b = n.currTemplate[P].find("iframe");
+            b.length && (a || (b[0].src = Q), n.isIE8 && b.css("display", a ? "block" : "none"))
+        }
+    };
+    a.magnificPopup.registerModule(P, {
+        options: {
+            markup: '<div class="mfp-iframe-scaler"><div class="mfp-close"></div><iframe class="mfp-iframe" src="//about:blank" frameborder="0" allowfullscreen></iframe></div>',
+            srcAction: "iframe_src",
+            patterns: {
+                youtube: {index: "youtube.com", id: "v=", src: "//www.youtube.com/embed/%id%?autoplay=1"},
+                vimeo: {index: "vimeo.com/", id: "/", src: "//player.vimeo.com/video/%id%?autoplay=1"},
+                gmaps: {index: "//maps.google.", src: "%id%&output=embed"}
+            }
+        }, proto: {
+            initIframe: function () {
+                n.types.push(P), w("BeforeChange", function (a, b, c) {
+                    b !== c && (b === P ? R() : c === P && R(!0))
+                }), w(b + "." + P, function () {
+                    R()
+                })
+            }, getIframe: function (b, c) {
+                var d = b.src, e = n.st.iframe;
+                a.each(e.patterns, function () {
+                    if (d.indexOf(this.index) > -1) return this.id && (typeof this.id == "string" ? d = d.substr(d.lastIndexOf(this.id) + this.id.length, d.length) : d = this.id.call(this, d)), d = this.src.replace("%id%", d), !1
+                });
+                var f = {};
+                return e.srcAction && (f[e.srcAction] = d), n._parseMarkup(c, f, b), n.updateStatus("ready"), c
+            }
+        }
+    });
+    var S = function (a) {
+        var b = n.items.length;
+        return a > b - 1 ? a - b : a < 0 ? b + a : a
+    }, T = function (a, b, c) {
+        return a.replace(/%curr%/gi, b + 1).replace(/%total%/gi, c)
+    };
+    a.magnificPopup.registerModule("gallery", {
+        options: {
+            enabled: !1,
+            arrowMarkup: '<button title="%title%" type="button" class="mfp-arrow mfp-arrow-%dir%"></button>',
+            preload: [0, 2],
+            navigateByImgClick: !0,
+            arrows: !0,
+            tPrev: "Previous (Left arrow key)",
+            tNext: "Next (Right arrow key)",
+            tCounter: "%curr% of %total%"
+        }, proto: {
+            initGallery: function () {
+                var c = n.st.gallery, d = ".mfp-gallery";
+                n.direction = !0;
+                if (!c || !c.enabled) return !1;
+                u += " mfp-gallery", w(g + d, function () {
+                    c.navigateByImgClick && n.wrap.on("click" + d, ".mfp-img", function () {
+                        if (n.items.length > 1) return n.next(), !1
+                    }), s.on("keydown" + d, function (a) {
+                        a.keyCode === 37 ? n.prev() : a.keyCode === 39 && n.next()
+                    })
+                }), w("UpdateStatus" + d, function (a, b) {
+                    b.text && (b.text = T(b.text, n.currItem.index, n.items.length))
+                }), w(f + d, function (a, b, d, e) {
+                    var f = n.items.length;
+                    d.counter = f > 1 ? T(c.tCounter, e.index, f) : ""
+                }), w("BuildControls" + d, function () {
+                    if (n.items.length > 1 && c.arrows && !n.arrowLeft) {
+                        var b = c.arrowMarkup,
+                            d = n.arrowLeft = a(b.replace(/%title%/gi, c.tPrev).replace(/%dir%/gi, "left")).addClass(m),
+                            e = n.arrowRight = a(b.replace(/%title%/gi, c.tNext).replace(/%dir%/gi, "right")).addClass(m);
+                        d.click(function () {
+                            n.prev()
+                        }), e.click(function () {
+                            n.next()
+                        }), n.container.append(d.add(e))
+                    }
+                }), w(h + d, function () {
+                    n._preloadTimeout && clearTimeout(n._preloadTimeout), n._preloadTimeout = setTimeout(function () {
+                        n.preloadNearbyImages(), n._preloadTimeout = null
+                    }, 16)
+                }), w(b + d, function () {
+                    s.off(d), n.wrap.off("click" + d), n.arrowRight = n.arrowLeft = null
+                })
+            }, next: function () {
+                n.direction = !0, n.index = S(n.index + 1), n.updateItemHTML()
+            }, prev: function () {
+                n.direction = !1, n.index = S(n.index - 1), n.updateItemHTML()
+            }, goTo: function (a) {
+                n.direction = a >= n.index, n.index = a, n.updateItemHTML()
+            }, preloadNearbyImages: function () {
+                var a = n.st.gallery.preload, b = Math.min(a[0], n.items.length), c = Math.min(a[1], n.items.length), d;
+                for (d = 1; d <= (n.direction ? c : b); d++) n._preloadItem(n.index + d);
+                for (d = 1; d <= (n.direction ? b : c); d++) n._preloadItem(n.index - d)
+            }, _preloadItem: function (b) {
+                b = S(b);
+                if (n.items[b].preloaded) return;
+                var c = n.items[b];
+                c.parsed || (c = n.parseEl(b)), y("LazyLoad", c), c.type === "image" && (c.img = a('<img class="mfp-img" />').on("load.mfploader", function () {
+                    c.hasSize = !0
+                }).on("error.mfploader", function () {
+                    c.hasSize = !0, c.loadError = !0, y("LazyLoadError", c)
+                }).attr("src", c.src)), c.preloaded = !0
+            }
+        }
+    });
+    var U = "retina";
+    a.magnificPopup.registerModule(U, {
+        options: {
+            replaceSrc: function (a) {
+                return a.src.replace(/\.\w+$/, function (a) {
+                    return "@2x" + a
+                })
+            }, ratio: 1
+        }, proto: {
+            initRetina: function () {
+                if (window.devicePixelRatio > 1) {
+                    var a = n.st.retina, b = a.ratio;
+                    b = isNaN(b) ? b() : b, b > 1 && (w("ImageHasSize." + U, function (a, c) {
+                        c.img.css({"max-width": c.img[0].naturalWidth / b, width: "100%"})
+                    }), w("ElementParse." + U, function (c, d) {
+                        d.src = a.replaceSrc(d, b)
+                    }))
+                }
             }
         }
     }), A()

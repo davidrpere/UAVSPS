@@ -1,47 +1,62 @@
 var h;
 var socket = io();
-var heading_dron1 = 0;
-var heading_dron2 = 0;
 
-socket.on('dron1_posicion', function (data) {
-    setDronePosition(data.lat, data.lng, 1);
-});
-
-socket.on('dron1_orientacion', function (data) {
-    heading_dron1 = data.orientacion;
-});
-
-socket.on('dron2_posicion', function (data) {
-    setDronePosition(data.lat, data.lng, 2);
-});
-
-socket.on('dron2_orientacion', function (data) {
-    heading_dron2 = data.orientacion;
+socket.on('posicion', function (data) {
+    setDronePosition(data.lat, data.lng, data.orientacion, data.id_dron);
 });
 
 socket.on('foto', function (data) {
-    setPhoto(data.lat, data.lng, data.url, data.alt);
+    setPhoto(data.lat, data.lng, data.url);
 });
 
-socket.on('ruta', function (route) {
+socket.on('ruta_mon_busqueda', function (route) {
+    clear_routes();
+
     for (var i = 0; i < route.length; i++) {
         switch (i){
             case 0:
-                console.log(route[i].waypoints);
-                setRoute(route[i].waypoints, "#3F51B5");
+                setRouteMonBusqueda(route[i].waypoints, "#3F51B5");
                 break;
 
             case 1:
-                console.log(route[i].waypoints);
-                setRoute(route[i].waypoints, "#FF9800");
+                setRouteMonBusqueda(route[i].waypoints, "#FF9800");
+                break;
+
+            default:
                 break;
         }
     }
 });
 
+socket.on('ruta_vigilancia', function (route) {
+    clear_routes();
+
+    var radio = route.radio;
+    var centro_lat = route.centro_lat;
+    var centro_lng = route.centro_lng;
+    var id_dron = route.id_dron;
+
+    switch (id_dron){
+        case 1:
+            setRouteVigilancia(radio, centro_lat, centro_lng, "#3F51B5");
+            break;
+        case 2:
+            setRouteVigilancia(radio, centro_lat, centro_lng, "#FF9800");
+            break;
+
+        default:
+            break;
+    }
+});
+
 $(document).ready(function () {
     $('.sidenav').sidenav();
+    $('.fixed-action-btn').floatingActionButton();
     $('.modal').modal();
+    $('select').formSelect();
+    $('.simple-ajax-popup').magnificPopup({
+        type: 'ajax'
+    });
 });
 
 $(window).resize(function () {

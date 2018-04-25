@@ -5,6 +5,7 @@ html
         meta(name="viewport", content="width=device-width, initial-scale=1")
         link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons")
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css")
+        link(rel="stylesheet", href="http://vjs.zencdn.net/6.6.3/video-js.css")
         link(rel="stylesheet", href="/stylesheets/mission.css")
         link(rel="stylesheet", href="/stylesheets/magnific_popup.css")
     body
@@ -22,7 +23,7 @@ html
             div(id="map")
 
         div(class="fixed-action-btn")
-            a(class="btn-floating btn-large modal-trigger red", id="btn-stop", href="#alert_end")
+            a(class="btn-floating btn-large modal-trigger red", href="#alert_end")
                 i(class="large material-icons") stop
 
         div(class="modal", id="alert_end")
@@ -33,6 +34,20 @@ html
                 a(href="/", class="modal-action modal-close waves-effect waves-green btn-flat") Finalizar misión
                 a(class="modal-action modal-close waves-effect waves-green btn-flat") Cancelar
 
+        div(class="modal", id="photo_dron")
+            div(class="modal-content")
+                div(class="row")
+                    form(class="col s12")
+                        div(class="row")
+                            div(class="input-field col s12")
+                                select(name="dron")
+                                    option(value="", disabled, selected)
+                                    option(value="0") Amarillo
+                                    option(value="1") Azul
+                                label Seleccione el dron/drones que desea que tomen un foto
+            div(class="modal-footer")
+                a(class="modal-action modal-close waves-effect waves-green btn-flat") Enviar
+
         script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js",
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN", crossorigin="anonymous")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js",
@@ -42,6 +57,7 @@ html
         script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js")
         script(src="https://unpkg.com/sweetalert/dist/sweetalert.min.js")
         script(src="/javascripts/magnific_popup.js")
+        script(src="http://vjs.zencdn.net/6.6.3/video.js")
         script(src="/javascripts/mission.js")
         script(src="/javascripts/google_maps_mission.js")
         script(async, defer, src="https://maps.googleapis.com/maps/api/js?" +

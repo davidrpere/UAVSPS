@@ -33,8 +33,9 @@ def getDatosWeb():
 
     bases_drones = []
     for base in posiciones_base:
-       bases_drones.append(base)
-
+        lat = getMeters(base[0], sur_oeste)
+        lon = getMeters(base[1], sur_oeste)
+        bases_drones.append([lat, lon])
 
     return bases_drones, altura_vuelo, fraccion_solape, norte_oeste, norte_este, sur_oeste, sur_este
 
