@@ -31,7 +31,7 @@ html
                 h4 ¿Finalizar misión?
                 p Se finalizará la misión y los cuadricópteros volverán a la estación base.
             div(class="modal-footer")
-                a(href="/", class="modal-action modal-close waves-effect waves-green btn-flat") Finalizar misión
+                a(href="/", id="btn_finalizar_mision", class="modal-action modal-close waves-effect waves-green btn-flat", v-on:click='finalizar_mision') Finalizar misión
                 a(class="modal-action modal-close waves-effect waves-green btn-flat") Cancelar
 
         div(class="modal", id="photo_dron")

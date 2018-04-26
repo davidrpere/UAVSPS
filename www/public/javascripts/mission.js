@@ -6,11 +6,23 @@ socket.on('posicion', function (data) {
 });
 
 socket.on('foto', function (data) {
-    setPhoto(data.lat, data.lng, data.url);
+    var id_dron = data.id_dron;
+    var positivo = data.positivo;
+
+    switch (id_dron){
+        case 1:
+            setPhoto(data.lat, data.lng, data.url, positivo, "#3F51B5");
+            break;
+        case 2:
+            setPhoto(data.lat, data.lng, data.url, positivo, "#FF9800");
+            break;
+        default:
+            break;
+    }
 });
 
 socket.on('ruta_mon_busqueda', function (route) {
-    clear_routes();
+    clear_map();
 
     for (var i = 0; i < route.length; i++) {
         switch (i){
@@ -29,7 +41,7 @@ socket.on('ruta_mon_busqueda', function (route) {
 });
 
 socket.on('ruta_vigilancia', function (route) {
-    clear_routes();
+    clear_map();
 
     var radio = route.radio;
     var centro_lat = route.centro_lat;
@@ -46,6 +58,15 @@ socket.on('ruta_vigilancia', function (route) {
 
         default:
             break;
+    }
+});
+
+var btnFinalizarMision = new Vue({
+    el: "#btn_finalizar_mision",
+    methods: {
+        finalizar_mision: function () {
+            socket.emit("finalizar_mision", {"mensaje": "fin"});
+        }
     }
 });
 

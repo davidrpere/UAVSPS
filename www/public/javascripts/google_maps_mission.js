@@ -1,6 +1,9 @@
 var map;
 var markerDron1;
 var markerDron2;
+var marker_photo;
+var positive_marker = [];
+var last_photo_positive = false;
 var flightPath;
 var circle;
 var marker_flightPath = [];
@@ -31,11 +34,14 @@ function mission_map() {
     });
 }
 
-function clear_routes() {
+function clear_map() {
     if(circle) circle.setMap(null);
     if(flightPath) flightPath.setMap(null);
     for (var i = 0; i < marker_flightPath.length; i++) {
         marker_flightPath[i].setMap(null);
+    }
+    for (var i = 0; i < positive_marker.length; i++) {
+        positive_marker[i].setMap(null);
     }
 }
 
@@ -88,24 +94,89 @@ function setRouteVigilancia(radio, centro_lat, centro_lng, color) {
     circle.setMap(map);
 }
 
-function setPhoto(lat, lng, path) {
+function setPhoto(lat, lng, path, positive, color) {
     var latlngset = new google.maps.LatLng(lat, lng);
 
-    var marker = new google.maps.Marker({
-        map: map,
-        position: latlngset,
-        icon: '/images/pin.png'
-    });
+    if (!last_photo_positive && marker_photo)
+        marker_photo.setMap(null);
 
+    if (positive > 0){
+        last_photo_positive = true;
+        var new_maker = true;
 
-    google.maps.event.addListener(marker, 'click', function () {
-        $.magnificPopup.open({
-            type: 'image',
-            items: {
-                src: path
+        for (var i = 0; i < positive_marker.length; i++) {
+            if (positive_marker[i].getPosition().lat() == latlngset.lat() &&
+                positive_marker[i].getPosition().lng() == latlngset.lng()) {
+                new_maker = false;
+            }
+        }
+
+        if (new_maker){
+            marker_photo = new google.maps.Marker({
+                map: map,
+                position: latlngset,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    strokeColor: color,
+                    strokeOpacity: 1,
+                    strokeWeight: 3,
+                    fillOpacity: 1,
+                    fillColor: '#4CAF50',
+                    fillOpacity: 0.8
+                }
+            });
+
+            positive_marker.push(marker_photo);
+
+            google.maps.event.addListener(marker_photo, 'click', function () {
+                $.magnificPopup.open({
+                    type: 'image',
+                    items: {
+                        src: path
+                    }
+                });
+            });
+        }
+    }else {
+        last_photo_positive = false;
+
+        var aux_positive_marker = [];
+        for (var i = 0; i < positive_marker.length; i++) {
+            if(positive_marker[i].getPosition().lat() == latlngset.lat() &&
+                positive_marker[i].getPosition().lng() == latlngset.lng()){
+                positive_marker[i].setMap(null);
+            }else {
+                aux_positive_marker.push(positive_marker[i]);
+            }
+        }
+
+        positive_marker = aux_positive_marker;
+
+        marker_photo = new google.maps.Marker({
+            map: map,
+            position: latlngset,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                strokeColor: color,
+                strokeOpacity: 1,
+                strokeWeight: 3,
+                fillOpacity: 1,
+                fillColor: '#F44336',
+                fillOpacity: 0.8
             }
         });
-    });
+
+        google.maps.event.addListener(marker_photo, 'click', function () {
+            $.magnificPopup.open({
+                type: 'image',
+                items: {
+                    src: path
+                }
+            });
+        });
+    }
 }
 
 
@@ -161,7 +232,7 @@ function setDronePosition(lat, lng, orientacion, id_dron) {
                     $.magnificPopup.open({
                         type: 'iframe',
                         items: {
-                            src: 'http://192.168.43.244:8000/index.html'
+                            src: 'http://192.168.43.219:8000/index.html'
                         }
                     });
                 });
