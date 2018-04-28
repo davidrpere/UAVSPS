@@ -31,6 +31,8 @@ public:
 
     void publish(double latitud, double longitud, double altitud);
 
+    void publish(double latitud, double longitud, double altitud, int heading);
+
     void publish(int heading);
 
     //void publish(blabla imagen);

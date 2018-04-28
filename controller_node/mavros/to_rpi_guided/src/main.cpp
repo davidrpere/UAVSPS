@@ -9,6 +9,11 @@
 #include <mavros_msgs/CommandTOL.h>
 #include <mavros_msgs/CommandHome.h>
 
+#include <mavros_msgs/ParamPull.h>
+#include <mavros_msgs/ParamPush.h>
+#include <mavros_msgs/ParamGet.h>
+#include <mavros_msgs/ParamSet.h>
+
 #include <mavros_msgs/SetMode.h>
 
 #include <mavros_msgs/WaypointList.h>
@@ -31,6 +36,7 @@
 #include "structs.h"
 
 int dron_id = 1;
+int heading = 0;
 
 double current_lat;
 double current_long;
@@ -54,11 +60,13 @@ void gps_callback(const sensor_msgs::NavSatFix::ConstPtr& msg){
     current_long = msg->longitude;
     current_alt = msg->altitude;
     publisher.publish(msg->latitude, msg->longitude, msg->altitude); //TODO implementar en zmq
+    //publisher.publish(msg->latitude, msg->longitude, msg->altitude, heading);
 }
 
 void compass_callback(const std_msgs::Float64& msg){
     ROS_INFO("Heading : %f", msg.data);
     publisher_heading.publish((int)msg.data);
+    heading = (int)msg.data;
     //publisher.publish_heading(msg.data); //TODO implementar en zmq
 }
 
@@ -100,6 +108,16 @@ std::vector<mavros_msgs::Waypoint> get_waypoints(void)
     std::vector<mavros_msgs::Waypoint> vector_waypoints_mavros;
     std::vector<waypoint_str> vector_wayp_str;
 
+    //As plantas video
+    /*vector_wayp_str.push_back(waypoint_str(42.1692962646484375,-8.68889617919921875));
+    vector_wayp_str.push_back(waypoint_str(42.1880607604980469,-8.66829776763916016));
+    vector_wayp_str.push_back(waypoint_str(42.1880607604980469,-8.66848373413085938));
+    vector_wayp_str.push_back(waypoint_str(42.1880607604980469,-8.668670654296875));
+    vector_wayp_str.push_back(waypoint_str(42.1880607604980469,-8.66885662078857422));
+    vector_wayp_str.push_back(waypoint_str(42.1879005432128906,-8.66885662078857422));
+    vector_wayp_str.push_back(waypoint_str(42.1879005432128906,-8.668670654296875));*/
+
+
     //As plantas
     /*
     vector_wayp_str.push_back(waypoint_str(42.1882026360702653, -8.66902828216552734, 0));
@@ -124,9 +142,10 @@ std::vector<mavros_msgs::Waypoint> get_waypoints(void)
     vector_wayp_str.push_back(waypoint_str(42.1878727328354941, -8.66866350173950195, 0));
     vector_wayp_str.push_back(waypoint_str(42.1879760762026592, -8.66872251033782959, 0));
     vector_wayp_str.push_back(waypoint_str(42.1879760762026592, -8.66872251033782959, 0));
-     */
 
+*/
     //Carregal
+    /*
     vector_wayp_str.push_back(waypoint_str(41.9886834477315674,-8.70498061180114746,0));
     vector_wayp_str.push_back(waypoint_str(41.9875390971587592,-8.70479285717010498,0));
     vector_wayp_str.push_back(waypoint_str(41.9880853576637776,-8.70351612567901611,0));
@@ -134,8 +153,9 @@ std::vector<mavros_msgs::Waypoint> get_waypoints(void)
     vector_wayp_str.push_back(waypoint_str(41.9884003524665417,-8.70418131351470947,0));
     vector_wayp_str.push_back(waypoint_str(41.9884442123787593,-8.70455145835876465,0));
     vector_wayp_str.push_back(waypoint_str(41.9884442123787593,-8.70455145835876465,0));
-
+    */
     //vector_wayp_str = client_waypoints_fotos.get_waypoints(); //TODO implementar en zmq
+    int i = 0;
     for (std::vector<waypoint_str>::iterator it = vector_wayp_str.begin(); it != vector_wayp_str.end(); ++it) {
         waypoint_str wp = *it;
         mavros_msgs::Waypoint waypoint;
@@ -145,8 +165,11 @@ std::vector<mavros_msgs::Waypoint> get_waypoints(void)
         waypoint.frame = mavros_msgs::Waypoint::FRAME_GLOBAL;
         waypoint.command = mavros_msgs::CommandCode::NAV_WAYPOINT;
         waypoint.is_current = false;
-        waypoint.autocontinue = false;
+        waypoint.autocontinue = false;        if(i==0){
+            waypoint.command = 82;
+        }
         vector_waypoints_mavros.push_back(waypoint);
+        i++;
     }
 
     return vector_waypoints_mavros;
@@ -154,6 +177,7 @@ std::vector<mavros_msgs::Waypoint> get_waypoints(void)
 
 std::vector<mavros_msgs::Waypoint> convert_waypoints(std::vector<waypoint_str> waypoints_struct){
     std::vector<mavros_msgs::Waypoint> vector_waypoints_mavros;
+    int i = 0;
     for (std::vector<waypoint_str>::iterator it = waypoints_struct.begin(); it != waypoints_struct.end(); ++it) {
         std::cout << "bucle convert_waypoints " << std::endl;
         waypoint_str wp = *it;
@@ -169,7 +193,11 @@ std::vector<mavros_msgs::Waypoint> convert_waypoints(std::vector<waypoint_str> w
         waypoint.command = mavros_msgs::CommandCode::NAV_WAYPOINT;
         waypoint.is_current = false;
         waypoint.autocontinue = false;
+        if(i==0){
+            waypoint.command = 82;
+        }
         vector_waypoints_mavros.push_back(waypoint);
+        i++;
     }
     return vector_waypoints_mavros;
 }
@@ -243,9 +271,41 @@ void spin_for(int seconds){
     }
 }
 
+void set_circle_parameters(ros::ServiceClient param_get_cl, ros::ServiceClient param_set_cl, double radius, double rate){
+    mavros_msgs::ParamGet pget;
+    pget.request.param_id = "CIRCLE_RADIUS";
+    if(param_get_cl.call(pget)){
+        ROS_INFO("OK");
+        mavros_msgs::ParamValue pvalget = pget.response.value;
+        printf("Real %f integer %i", pvalget.real, pvalget.integer);
+    }else{
+        ROS_ERROR("NOP");
+    }
+
+    mavros_msgs::ParamSet pset;
+    pset.request.param_id = "CIRCLE_RADIUS";
+    pset.request.value.real = radius; // cm, entre 0 y 10000
+    if(param_set_cl.call(pset)){
+        ROS_INFO("SET CIRCLE RADIUS OK");
+        mavros_msgs::ParamValue pvalset = pset.response.value;
+        printf("Real %f integer %i", pvalset.real, pvalset.integer);
+    }else{
+        ROS_ERROR("SET CIRCLE RADIUS FAILURE");
+    }
+
+    pset.request.param_id = "CIRCLE_RATE";
+    pset.request.value.real = rate; // deg/s, entre -90 y 90
+    if(param_set_cl.call(pset)){
+        ROS_INFO("SET CIRCLE RATE OK");
+        mavros_msgs::ParamValue pvalset = pset.response.value;
+        printf("Real %f integer %i", pvalset.real, pvalset.integer);
+    }else{
+        ROS_ERROR("SET CIRCLE RATE FAILURE");
+    }
+}
+
 int main(int argc, char **argv)
 {
-    std::cout << "nuevo" << std::endl;
     ////////////////////////////////////
     ///////////INICIALIZACIÓN///////////
     ////////////////////////////////////
@@ -281,26 +341,23 @@ int main(int argc, char **argv)
     ///////////////COMANDOS///////////////
     ros::ServiceClient land_cl = n.serviceClient<mavros_msgs::CommandTOL>("/mavros/cmd/land");
 
+    ros::ServiceClient param_pull_cl = n.serviceClient<mavros_msgs::ParamPull>("/mavros/param/pull");
+    ros::ServiceClient param_push_cl = n.serviceClient<mavros_msgs::ParamPush>("/mavros/param/push");
+
+    ros::ServiceClient param_get_cl = n.serviceClient<mavros_msgs::ParamGet>("/mavros/param/get");
+    ros::ServiceClient param_set_cl = n.serviceClient<mavros_msgs::ParamSet>("/mavros/param/set");
+
+
     //////////////////////////////////////
     ///////////ESPERA_WAYPOINTS///////////
     //////////////////////////////////////
-
-    /*while(1){
-        usleep(1000000);
-        ros::spinOnce();
-
-        publisher.publish_foto(1,0,0,0);
-    }*/
 
     ros::Rate r(1);
 
     //SET MODE GUIDED
     set_mode(n, modes.at(uavsps::GUIDED));
 
-    for(int i = 0; i<10; i++){
-        ros::spinOnce();
-        std::cout << "spinning" << std::endl;
-    }
+    spin_for(30);
 
     //Esperamos mientras no se limpie la lista de waypoints
     while(1){
@@ -320,37 +377,45 @@ int main(int argc, char **argv)
 
     std::vector<waypoint_str> vector_waypoints_custom;
 
-    /********************/
-    //ros::spin();
-    /********************/
-
-    //vector_waypoints_custom = cliente.get_waypoints(); //Bloqueante
-    //std::vector<mavros_msgs::Waypoint> vector_waypoints_mavros = convert_waypoints(vector_waypoints_custom);
-
-    std::vector<mavros_msgs::Waypoint> vector_waypoints_mavros = get_waypoints();
-
-    //mission = vector_waypoints_mavros;
-    mission = vector_waypoints_mavros;
-
-    /*mavros_msgs::Waypoint mission_start;
-    mission_start.command = mavros_msgs::CommandCode::CMD_MISSION_START;
-    pushRequest.request.waypoints.push_back(mission_start);*/
-
+    vector_waypoints_custom = cliente.get_waypoints(); //Bloqueante
     mavros_msgs::Waypoint mission_sethome;
     mission_sethome.command = mavros_msgs::CommandCode::CMD_DO_SET_HOME;
     pushRequest.request.waypoints.push_back(mission_sethome);
 
-    /*double z_alt_takeoff = 10;
-    mavros_msgs::Waypoint mission_takeoff;
-    mission_takeoff.command = mavros_msgs::CommandCode::NAV_TAKEOFF;
-    mission_takeoff.z_alt = z_alt_takeoff;
-    pushRequest.request.waypoints.push_back(mission_takeoff);*/
+    //std::vector<mavros_msgs::Waypoint> vector_waypoints_mavros = convert_waypoints(vector_waypoints_custom);
+    //std::vector<mavros_msgs::Waypoint> vector_waypoints_mavros = get_waypoints();
 
-    for(std::vector<mavros_msgs::Waypoint>::iterator it = vector_waypoints_mavros.begin();
-        it != vector_waypoints_mavros.end(); ++it){
-        ROS_INFO("Waypoint");
-        mavros_msgs::Waypoint waypoint = *it;
+    std::vector<mavros_msgs::Waypoint> vector_waypoints_mavros;
+
+    if(vector_waypoints_custom.at(0).vigilancia){
+        int radio = vector_waypoints_custom.at(1).altitude;
+        set_circle_parameters(param_get_cl, param_set_cl, radio, 20);
+        mavros_msgs::Waypoint waypoint;
+        waypoint.x_lat = vector_waypoints_custom.at(0).latitude;
+        waypoint.y_long = vector_waypoints_custom.at(0).longitude;
+        waypoint.z_alt = vector_waypoints_custom.at(0).altitude;
+        waypoint.frame = mavros_msgs::Waypoint::FRAME_GLOBAL;
+        waypoint.command = 201;
+        waypoint.param1 = 10;
+        waypoint.is_current = false;
+        waypoint.autocontinue = false;
+        vector_waypoints_mavros.push_back(waypoint);
         pushRequest.request.waypoints.push_back(waypoint);
+
+        waypoint.command = mavros_msgs::CommandCode::NAV_LOITER_TURNS;
+        vector_waypoints_mavros.push_back(waypoint);
+        pushRequest.request.waypoints.push_back(waypoint);
+
+
+    }else {
+        vector_waypoints_mavros = convert_waypoints(vector_waypoints_custom);
+        for(std::vector<mavros_msgs::Waypoint>::iterator it = vector_waypoints_mavros.begin();
+            it != vector_waypoints_mavros.end(); ++it){
+            ROS_INFO("Waypoint");
+            mavros_msgs::Waypoint waypoint = *it;
+            pushRequest.request.waypoints.push_back(waypoint);
+        }
+        mission = vector_waypoints_mavros;
     }
 
     mavros_msgs::Waypoint mission_rtl;
@@ -370,10 +435,6 @@ int main(int argc, char **argv)
         ROS_INFO("NOOOOOO");
     }
 
-    //TODO descomentar para prueba completa
-    /*while(1){
-        ros::spinOnce();
-    }*/
 
     ////////////////////////////////////
     ///////////////MISIÓN///////////////
@@ -382,7 +443,8 @@ int main(int argc, char **argv)
     //SET MODE GUIDED
     set_mode(n, modes.at(uavsps::GUIDED));
 
-    spin_for(5);
+    std::cout << "En espera durante 3 minutos..." << std::endl;
+    spin_for(180);
 
     //ARM
     std::cout << "vamos a aarmarla siuuu" << std::endl;
@@ -399,14 +461,13 @@ int main(int argc, char **argv)
     //AUTO
     set_mode(n, modes.at(uavsps::AUTO));
 
-
     int i = 0;
     while(ros::ok()){
         i++;
-        ros::spinOnce();
-        if(i%100==0){
-            publisher.publish_foto(1, current_lat, current_long, current_alt);
-            i = 0;
+        spin_for(1);
+        if(i==5){
+            i=0;
+            publisher.publish_foto(dron_id, current_lat, current_long, current_alt);
         }
     }
 

@@ -8,7 +8,16 @@ void publisher_gps_fotos::publish(double latitud, double longitud, double altitu
     int size = sizeof(latitud)+ sizeof(longitud)+ sizeof(altitud)+2;
     zmq::message_t message(size);
     snprintf((char *) message.data(), size ,
-        "%f %f %f", latitud, longitud, altitud);
+             "%f %f %f", latitud, longitud, altitud);
+    this->publisher.send(message);
+
+}
+
+void publisher_gps_fotos::publish(double latitud, double longitud, double altitud, int heading) {
+    int size = sizeof(latitud)+sizeof(longitud)+sizeof(altitud)+sizeof(heading)+3;
+    zmq::message_t message(size);
+    snprintf((char *) message.data(), size ,
+             "%f %f %f %i", latitud, longitud, altitud, heading);
     this->publisher.send(message);
 
 }
@@ -38,3 +47,4 @@ void publisher_gps_fotos::publish_foto(int id, double lat, double lon, double al
     printf("Respuesta: ");
     std::cout << std::string(static_cast<char*>(reply.data()), reply.size()) << std::endl;
 }
+

@@ -17,7 +17,6 @@
 class client_waypoints_fotos {
 
 public:
-
     client_waypoints_fotos(std::string identity, std::string puerto_waypoints)
             : identity(identity),
               ip_gcs(ip_gcs),

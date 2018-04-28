@@ -42,45 +42,101 @@ std::vector<waypoint_str> client_waypoints_fotos::get_waypoints()
               std::istream_iterator<std::string>(),
               back_inserter(waypoints));        //isss >> latitude >> longitude;
 
+    bool vigilancia = false;
+    bool monitor = false;
+    int radio = 0;
+    int i = 0;
     for (std::vector<std::string>::iterator it = waypoints.begin() ; it != waypoints.end(); ++it){
         std::string ss = *it;
-        size_t index = 0;
-        while (true) {
-            /* Locate the substring to replace. */
-            index = ss.find(",", index);
-            if (index == std::string::npos) break;
+        if(i==0){
+            if(ss == "v"){
+                vigilancia = true;
+                std::cout << "vigilancia" << std::endl;
+            }else if(ss == "m"){
+                monitor = true;
+                std::cout << "monitoreo" << std::endl;
+            }
+            i++;
+        }else{
+            if(vigilancia){
+                if(i==1){
+                    size_t index = 0;
+                    while (true) {
+                        /* Locate the substring to replace. */
+                        index = ss.find(",", index);
+                        if (index == std::string::npos) break;
 
-            /* Make the replacement. */
-            ss.replace(index, 1, " ");
+                        /* Make the replacement. */
+                        ss.replace(index, 1, " ");
 
-            /* Advance index forward so the next iteration doesn't pick it up as well. */
-            index += 1;
+                        /* Advance index forward so the next iteration doesn't pick it up as well. */
+                        index += 1;
+                    }
+                    std::vector<std::string> latlong;
+                    std::istringstream isss(ss);
+                    std::copy(std::istream_iterator<std::string>(isss),
+                              std::istream_iterator<std::string>(),
+                              back_inserter(latlong));        //isss >> latitude >> longitude;
+
+                    double lati, longi;
+                    std::string::size_type sz;     // alias of size_t
+                    std::string::size_type sz_2;     // alias of size_t
+                    lati = std::stod (latlong.at(0),&sz);
+                    longi = std::stod (latlong.at(1),&sz_2);
+
+                    waypoint_str wp(lati, longi, 0, true);
+                    map.push_back(wp);
+                    i++;
+                }else{
+                    radio = std::stoi(ss);
+                    waypoint_str radiostr(radio,radio,radio,true);
+                    map.push_back(radiostr);
+                    printf("Radio %i\n", radio);
+                }
+            }else if(monitor){
+                size_t index = 0;
+                while (true) {
+                    /* Locate the substring to replace. */
+                    index = ss.find(",", index);
+                    if (index == std::string::npos) break;
+
+                    /* Make the replacement. */
+                    ss.replace(index, 1, " ");
+
+                    /* Advance index forward so the next iteration doesn't pick it up as well. */
+                    index += 1;
+                }
+                std::vector<std::string> latlong;
+                std::istringstream isss(ss);
+                std::copy(std::istream_iterator<std::string>(isss),
+                          std::istream_iterator<std::string>(),
+                          back_inserter(latlong));        //isss >> latitude >> longitude;
+
+                double lati, longi;
+                std::string::size_type sz;     // alias of size_t
+                std::string::size_type sz_2;     // alias of size_t
+                lati = std::stod (latlong.at(0),&sz);
+                longi = std::stod (latlong.at(1),&sz_2);
+
+                waypoint_str wp(lati, longi, 0);
+                map.push_back(wp);
+            }
         }
-        std::vector<std::string> latlong;
-        std::istringstream isss(ss);
-        std::copy(std::istream_iterator<std::string>(isss),
-                  std::istream_iterator<std::string>(),
-                  back_inserter(latlong));        //isss >> latitude >> longitude;
-
-        double lati, longi;
-        std::string::size_type sz;     // alias of size_t
-        std::string::size_type sz_2;     // alias of size_t
-        lati = std::stod (latlong.at(0),&sz);
-        longi = std::stod (latlong.at(1),&sz_2);
-
-        waypoint_str wp(lati, longi, 0);
-        map.push_back(wp);
     }
 
-    for (std::vector<waypoint_str>::iterator it_w = map.begin() ; it_w != map.end(); ++it_w){
-        waypoint_str wp = *it_w;
-        std::cout << std::setprecision(10) << "lat : " << wp.latitude
-                  << ", long : " << wp.longitude
-                  << ", alt: " << wp.altitude
-                  << std::endl;
-    }
+    if(vigilancia){
+        std::cout << "Misión de vigilancia" << std::endl;
+    }else if(monitor){
+        for (std::vector<waypoint_str>::iterator it_w = map.begin() ; it_w != map.end(); ++it_w){
+            waypoint_str wp = *it_w;
+            std::cout << std::setprecision(10) << "lat : " << wp.latitude
+                      << ", long : " << wp.longitude
+                      << ", alt: " << wp.altitude
+                      << std::endl;
+        }
 
-    std::cout << "map size " << map.size() << std::endl;
+        std::cout << "map size " << map.size() << std::endl;
+    }
 
     return map;
 }

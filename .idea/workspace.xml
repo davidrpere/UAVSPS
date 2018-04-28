@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="true">
+    <generated>
+      <config projectName="mavros" targetName="mavros" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f73a73e6-4768-4984-83e4-be98fdfa26b0" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/controller_node/mavros/torpi/src/server_gps_fotos.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/controller_node/mavros/torpi/src/server_gps_fotos.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller_node/mavros/torpi/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/controller_node/mavros/torpi/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller_node/mavros/torpi/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/controller_node/mavros/torpi/src/main.cpp" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/controller_node/mavros/cmake-build-debug/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="FileEditorManager">
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <splitter split-orientation="vertical" split-proportion="0.5">
+          <split-first>
+            <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+              <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
+                <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/main.cpp">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="68">
+                      <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+                      <folding>
+                        <element signature="e#0#18#0" expanded="true" />
+                        <element signature="e#167#202#0" expanded="true" />
+                      </folding>
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="server_gps_fotos.h" pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/server_gps_fotos.h">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="495">
+                      <caret line="33" column="11" selection-start-line="33" selection-start-column="11" selection-end-line="33" selection-end-column="11" />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+            </leaf>
+          </split-first>
+          <split-second>
+            <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+              <file leaf-file-name="client_waypoints_fotos.h" pinned="false" current-in-tab="true">
+                <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.h">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="131">
+                      <caret line="22" column="40" selection-start-line="22" selection-start-column="40" selection-end-line="22" selection-end-column="40" />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+            </leaf>
+          </split-second>
+        </splitter>
+      </split-first>
+      <split-second>
+        <splitter split-orientation="vertical" split-proportion="0.5">
+          <split-first>
+            <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+              <file leaf-file-name="server_gps_fotos.cpp" pinned="false" current-in-tab="true">
+                <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/server_gps_fotos.cpp">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="150">
+                      <caret line="10" column="29" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="29" />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+            </leaf>
+          </split-first>
+          <split-second>
+            <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+              <file leaf-file-name="client_waypoints_fotos.cpp" pinned="false" current-in-tab="true">
+                <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.cpp">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="131">
+                      <caret line="10" column="18" selection-start-line="10" selection-start-column="10" selection-end-line="10" selection-end-column="18" />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+            </leaf>
+          </split-second>
+        </splitter>
+      </split-second>
+    </splitter>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>mavros</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/controller_node/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/Publisher.cpp" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/Subscriber.h" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/Publisher.h" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/Client_Waypoints_Fotos.cpp" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/Client_Waypoints_Fotos.h" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.cpp" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/Server_GPS_Fotos.h" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/Server_GPS_Fotos.cpp" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/server_gps_fotos.h" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.h" />
+        <option value="$PROJECT_DIR$/controller_node/mavros/torpi/src/main.cpp" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodeModulesDirectoryManager">
+    <handled-path value="$PROJECT_DIR$/www/node_modules" />
+  </component>
+  <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="width" value="1280" />
+    <option name="height" value="800" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/controller_node/mavros" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.Build All">
+    <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="mavros" RUN_TARGET_NAME="mavros" EXPLICIT_BUILD_TARGET_NAME="all" />
+    <configuration name="mavros" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mavros" TARGET_NAME="mavros" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="mavros" RUN_TARGET_NAME="mavros" />
+    <list>
+      <item itemvalue="Application.Build All" />
+      <item itemvalue="Application.mavros" />
+    </list>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f73a73e6-4768-4984-83e4-be98fdfa26b0" name="Default" comment="" />
+      <created>1523293080919</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1523293080919</updated>
+      <workItem from="1523293083541" duration="8665000" />
+      <workItem from="1523464877507" duration="49000" />
+    </task>
+    <task id="LOCAL-00001" summary="Commit mavros">
+      <created>1523296774351</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1523296774351</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="8714000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="22" width="1280" height="778" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" weight="0.16535018" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="CMake" order="7" weight="0.32905984" />
+      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Terminal" order="7" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32917705" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.2688391" />
+    </layout>
+    <layout-to-restore>
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Run" order="7" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.16535018" />
+      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="TODO" order="11" />
+      <window_info anchor="bottom" id="Version Control" order="3" />
+      <window_info anchor="bottom" id="CMake" order="4" weight="0.32892057" />
+      <window_info anchor="bottom" id="Find" order="6" weight="0.32917705" />
+      <window_info anchor="bottom" id="Debug" order="8" weight="0.4" />
+      <window_info anchor="bottom" id="Terminal" order="1" />
+      <window_info anchor="bottom" id="Event Log" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
+      <window_info anchor="bottom" id="Message" order="5" />
+      <window_info anchor="bottom" id="Messages" order="0" weight="0.2688391" />
+      <window_info id="Favorites" order="0" side_tool="true" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Commit mavros" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit mavros" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="22" lean-forward="true" selection-start-line="20" selection-start-column="22" selection-end-line="20" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#167#202#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/server_gps_fotos.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" column="11" selection-start-line="33" selection-start-column="11" selection-end-line="33" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="22" column="40" lean-forward="true" selection-start-line="22" selection-start-column="40" selection-end-line="22" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/server_gps_fotos.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="29" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="18" selection-start-line="10" selection-start-column="10" selection-end-line="10" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="5" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/CMakeLists.txt" />
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="18" selection-start-line="7" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="33" column="8" selection-start-line="33" selection-start-column="8" selection-end-line="33" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="22" column="40" selection-start-line="22" selection-start-column="40" selection-end-line="22" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/client_waypoints_fotos.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="10" column="18" selection-start-line="10" selection-start-column="10" selection-end-line="10" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/server_gps_fotos.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" column="11" selection-start-line="33" selection-start-column="11" selection-end-line="33" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/server_gps_fotos.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="29" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller_node/mavros/torpi/src/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#167#202#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
