@@ -30,8 +30,8 @@ def main():
                                                        limite_generaciones_sin_cambio=combinacion[
                                                            'limite_generaciones_sin_cambio'],
                                                        contar_pos_inicial_en_fitness=combinacion[
-                                                           'contar_pos_inicial_en_fitness'],
-                                                       ruta_logs=utils.getRutaLogs(combinacion))
+                                                           'contar_pos_inicial_en_fitness'])
+                                                       #ruta_logs=utils.getRutaLogs(combinacion))
 
     #time.sleep(10)
     utils.enviarResultado(cromosoma_ganador, nodos_geometricas, drones)

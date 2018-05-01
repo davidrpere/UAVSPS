@@ -1,12 +1,14 @@
 from time import sleep
 import numpy as np
 import zmq
+import json
+import base64
 from geopy import distance
 
 
 class UAV ():
 
-    def __init__(self, id, caracteristicas_sensor, posicion_lanzamiento, altura, ip="localhost", puerto_posiciones="5557",puerto_angulo="5560", puerto_waypoints = "5558", puerto_foto = "8081",  color='k', style='--'):
+    def __init__(self, id, caracteristicas_sensor, posicion_lanzamiento, altura, raspberry = False, puerto_posiciones = "5557",puerto_angulo = "5560", puerto_waypoints = "5558", puerto_foto = "8081",  color='k', style='--'):
         self.id = id
         self.caracteristicas_sensor = caracteristicas_sensor
         self.posicion_lanzamiento = posicion_lanzamiento
@@ -15,7 +17,7 @@ class UAV ():
         self.color = color
         self.style = style
 
-        self.ip = ip
+        self.ip = "*"
         self.puerto_posiciones = puerto_posiciones
         self.puerto_angulo = puerto_angulo
         self.puerto_foto = puerto_foto
@@ -23,6 +25,7 @@ class UAV ():
 
         self.pi = 3.141592653589793
         self.altura = altura
+        self.raspberry = raspberry
 
         self.ESTE = 90
         self.NORTE = 0
@@ -36,7 +39,6 @@ class UAV ():
 
     def setFinMision(self):
         self.fin_mision = True
-
 
     def startBucleMision(self, metros_por_desplazamiento = 0.00007, segundos_entre_actualizacion = 0.5):
 
@@ -59,21 +61,35 @@ class UAV ():
             self.fin_mision = False
 
             print("Esperando por waypoints...")
-            mensaje = socket_waypoints.recv() # "lat1,lng1 lat2,lng2"
+            mensaje = socket_waypoints.recv()  # "lat1,lng1 lat2,lng2"
             socket_waypoints.send("waypoints recibidos por dron " + str(self.id))
 
-            print('Waypoints:')
-            waypoints = []
-            for w in mensaje.split(" ")[1:]:
-                lat, long = w.split(',')
-                waypoints.append([long, lat])
-                print([long, lat])
+            if mensaje.split(" ")[0] == "m":
+                print('Waypoints:')
+                waypoints = []
+                for w in mensaje.split(" ")[1:]:
+                    lat, long = w.split(',')
+                    waypoints.append([long, lat])
+                    print([long, lat])
 
-            primer_waypoint = [float(waypoints[0][0]), float(waypoints[0][1])]
-            self.posicion_actual = primer_waypoint
+                primer_waypoint = [float(waypoints[0][0]), float(waypoints[0][1])]
+                self.posicion_actual = primer_waypoint
 
-            self.initMissionDummy(waypoints, metros_por_desplazamiento, segundos_entre_actualizacion)
-            self.goToDummy(primer_waypoint,metros_por_desplazamiento, segundos_entre_actualizacion)
+                self.initMissionDummy(waypoints, metros_por_desplazamiento, segundos_entre_actualizacion)
+                self.goToDummy(primer_waypoint, metros_por_desplazamiento, segundos_entre_actualizacion)
+            else:
+                self.angulo = self.SUR
+                centro = (mensaje.split(" ")[1]).split(',')
+                radio = mensaje.split(" ")[2]
+                print("centro: ", str(centro), ", radio: ", str(radio))
+
+                radio = int(radio) / 100000.  # (Km)
+                lat = float(centro[0]) + radio / 111
+                lon = float(centro[1])
+
+                self.initBuitre(lat, lon, radio)
+                self.goToDummy([lon, lat], metros_por_desplazamiento, segundos_entre_actualizacion)
+
 
 
     def initMissionDummy(self, waypoints, metros_por_desplazamiento, segundos_entre_actualizacion):
@@ -90,24 +106,35 @@ class UAV ():
 
         while True:
             for waypoint in waypoints:
+                print(5*'\n')
+                print("Viajando a ", waypoint)
                 if self.fin_mision:
                     return
 
                 self.goToDummy(waypoint, metros_por_desplazamiento, segundos_entre_actualizacion)
 
-                self.sendPhotoDummy()
+                #self.sendPhotoDummy()
+                print("Ha llegado a ", waypoint)
 
             if do_reverse:
                 for waypoint in reversed(waypoints):
                     if self.fin_mision:
                         return
 
+                    print(5*'\n')
+                    print("Viajando a ", waypoint)
                     self.goToDummy(waypoint, metros_por_desplazamiento, segundos_entre_actualizacion)
 
-                    self.sendPhotoDummy()
+                    #self.sendPhotoDummy()
+
+                    print("Ha llegado a ", waypoint)
 
 
     def cambiarOrientacion (self, angulo_final, segundos_entre_actualizacion, angulos_desplazamiento):
+
+        # TODO -> VER SENTIDO GIRO OPTIMO
+        print('Angulo final:', angulo_final)
+
         vueltas_horarias = angulo_final / angulos_desplazamiento
         vueltas_antihorarias = (360 - angulo_final) / angulos_desplazamiento
 
@@ -129,6 +156,7 @@ class UAV ():
                 self.socket_angulo.send_string(str(int(self.angulo)))
                 self.socket_posiciones.send_string("{} {} {}".format(self.posicion_actual[1], self.posicion_actual[0], self.altura))
                 self.angulo_anterior = self.angulo
+                print("Orientandome hacia: ", self.angulo)
 
 
     def getOrientacionFinal(self, sentido_x, sentido_y, alpha):
@@ -158,6 +186,9 @@ class UAV ():
     def goToDummy (self, pos_str, metros_por_desplazamiento, segundos_entre_actualizacion, angulos_desplazamiento = 5):
         posicion = [float(pos_str[0]), float(pos_str[1])]
 
+        print("Estoy en:", self.posicion_actual)
+        print("Viajando a ", posicion)
+
         if posicion[0] == self.posicion_actual[0] and posicion[1] == self.posicion_actual[1]:
             return
 
@@ -165,6 +196,9 @@ class UAV ():
 
         sentido_x = ((-1) * (self.posicion_actual[0] > posicion[0]) + 1 * (self.posicion_actual[0] < posicion[0])) * (str(self.posicion_actual[0]) != pos_str[0])
         sentido_y = ((-1) * (self.posicion_actual[1] > posicion[1]) + 1 * (self.posicion_actual[1] < posicion[1]))  * (str(self.posicion_actual[1]) != pos_str[1])
+
+        print('sentido_x:', sentido_x)
+        print('sentido_y:', sentido_y)
 
         if sentido_x != 0 and sentido_y != 0:
             y_delta = abs(self.posicion_actual[1] - posicion[1])
@@ -195,8 +229,10 @@ class UAV ():
             desplazamiento_x = sentido_x * metros_por_desplazamiento
             desplazamiento_y = sentido_y * metros_por_desplazamiento
 
+        print('Alpha: ', alpha)
         angulo_final = self.getOrientacionFinal(sentido_x, sentido_y, alpha)
         self.cambiarOrientacion(angulo_final, segundos_entre_actualizacion, angulos_desplazamiento)
+        print("Nueva orientacion: ", self.angulo)
 
         self.enmovimiento = True
         while distancia_recorrer > 0:
@@ -204,16 +240,48 @@ class UAV ():
             ultima_posicion = self.posicion_actual
 
             if distancia_recorrer > metros_por_desplazamiento:
+                print("distancia_recorrer: ", distancia_recorrer)
                 self.posicion_actual[0] += desplazamiento_x
                 self.posicion_actual[1] += desplazamiento_y
             else:
                 self.posicion_actual = posicion
 
             sleep(segundos_entre_actualizacion)
+
+            print("{} {} {}".format(self.posicion_actual[1], self.posicion_actual[0], self.altura))
             self.socket_posiciones.send_string("{} {} {}".format(self.posicion_actual[1], self.posicion_actual[0], self.altura))
 
         self.enmovimiento = False
 
+    def to_rad(self, grados):
+        return (grados * self.pi) / 180
+
+    def initBuitre(self, lat, lon, radio):
+        while True:
+            #radio = radio / 100000.  # (Km)
+            #lat = latitud + radio / 111
+
+            for i in range(0, 360):
+                if self.fin_mision:
+                    return
+                if i % 2 == 0:
+                    x = lon + (radio / 111) * np.sin(self.to_rad(i))
+                    y = lat - (radio / 111.) * (1 - np.cos(self.to_rad(i)))
+
+                    self.posicion_actual = [x,y]
+
+                    print("i: ", i, "x: ", x, ", y: ", y, ", angulo: ", self.angulo, ", bad bunny: ", self.to_rad(i))
+
+                    self.socket_angulo.send_string(str(int(self.angulo)))
+                    self.socket_posiciones.send_string("{} {} {}".format(y, x, self.altura))
+                    sleep(0.25)
+
+                self.angulo += 1
+
+                if self.angulo == 360:
+                    self.angulo = self.NORTE
+
 
     def sendPhotoDummy (self):
         self.socket_camara.send_string("{} {} {} {}".format(self.id, self.posicion_actual[1], self.posicion_actual[0], self.altura))
+

@@ -37,7 +37,10 @@ req_algoritmo_genetico.connect("tcp://localhost:7777");
  * Configuración publicador fin de misión.
  **********************************************************************************************************************/
 var pub_fin_mision = zmq.socket('pub');
-pub_fin_mision.bind('tcp://*:8888');
+pub_fin_mision.bind('tcp://*:8887');
+
+var pub_fin_mision_cir = zmq.socket('pub');
+pub_fin_mision_cir.bind('tcp://*:8888');
 
 
 /***********************************************************************************************************************
@@ -48,20 +51,10 @@ var req_dron1_envio_waypoints = zmq.socket('req'),
     sub_dron1_orientacion = zmq.socket('sub'),
     sub_dron1_foto = zmq.socket('sub');
 
-/* CODIGO PARA USO DEL DRON
-req_dron1_envio_waypoints.connect("tcp://192.168.43.92:5558");
-sub_dron1_latlng.connect("tcp://192.168.43.92:5557");
-sub_dron1_orientacion.connect("tcp://192.168.43.92:5560");
-sub_dron1_foto.connect('tcp://192.168.43.92:8999');
-sub_dron1_latlng.subscribe('');
-sub_dron1_orientacion.subscribe('');
-sub_dron1_foto.subscribe('');
-*/
-
-req_dron1_envio_waypoints.connect("tcp://localhost:5558");
-sub_dron1_latlng.connect("tcp://localhost:5557");
-sub_dron1_orientacion.connect("tcp://localhost:5560");
-sub_dron1_foto.connect('tcp://localhost:8999');
+req_dron1_envio_waypoints.connect("tcp://192.168.43.219:5558");
+sub_dron1_latlng.connect("tcp://192.168.43.219:5557");
+sub_dron1_orientacion.connect("tcp://192.168.43.219:5560");
+sub_dron1_foto.connect('tcp://192.168.43.219:8999');
 
 sub_dron1_latlng.subscribe('');
 sub_dron1_orientacion.subscribe('');
@@ -86,10 +79,10 @@ sub_dron2_orientacion.subscribe('');
 sub_dron2_foto.subscribe('');
 */
 
-req_dron2_envio_waypoints.connect("tcp://localhost:6558");
-sub_dron2_latlng.connect("tcp://localhost:6557");
-sub_dron2_orientacion.connect("tcp://localhost:6560");
-sub_dron2_foto.connect('tcp://localhost:8999');
+req_dron2_envio_waypoints.connect("tcp://192.168.43.35:6558");
+sub_dron2_latlng.connect("tcp://192.168.43.35:6557");
+sub_dron2_orientacion.connect("tcp://192.168.43.35:6560");
+sub_dron2_foto.connect('tcp://192.168.43.35:8999');
 
 sub_dron2_latlng.subscribe('');
 sub_dron2_orientacion.subscribe('');
@@ -158,12 +151,17 @@ app.post('/mision', function (req, res) {
             if(dron1_activo){
                 req_dron1_envio_waypoints.send("v " + centro_lat+","+centro_lng+" " + radio);
 
-                io.emit("ruta_vigilancia", {
-                    "radio": radio,
-                    "centro_lat": centro_lat,
-                    "centro_lng": centro_lng,
-                    "id_dron": 1
+                console.log("radio: " + radio + ", centro_lat: " + centro_lat + ", centro_lng: " + centro_lng);
+
+                io.on('connection', function (socket) {
+                    socket.emit("ruta_vigilancia", {
+                        "radio": radio,
+                        "centro_lat": centro_lat,
+                        "centro_lng": centro_lng,
+                        "id_dron": 1
+                    });
                 });
+
             } else{
                 if (dron2_activo){
                     req_dron2_envio_waypoints.send("v " + centro_lat+","+centro_lng+" " + radio);
@@ -190,48 +188,104 @@ app.post('/mision', function (req, res) {
 req_algoritmo_genetico.on('message', function (data) {
     var arr = JSON.parse(data.toString());
 
-    for (var i = 0; i < arr.length; i++) {
-        switch (i) {
-            case 0:
-                var jsonDron1 = arr[i].waypoints;
-                var waypoints_dron1 = "m ";
+    // Tipo 0: Monitorización, tipo 1: búsqueda de personas, tipo 2: vigilancia.
+    switch (tipoMision){
+        case 0:
+            for (var i = 0; i < arr.length; i++) {
+                switch (i) {
+                    case 0:
+                        var jsonDron1 = arr[i].waypoints;
+                        var waypoints_dron1 = "m ";
 
-                for (var j = 0; j < jsonDron1.length; j++) {
-                    waypoints_dron1 = waypoints_dron1 + (jsonDron1[j].latitud).toFixed(7) + ","
-                        + (jsonDron1[j].longitud).toFixed(7) + " ";
+                        for (var j = 0; j < jsonDron1.length; j++) {
+                            waypoints_dron1 = waypoints_dron1 + (jsonDron1[j].latitud).toFixed(7) + ","
+                                + (jsonDron1[j].longitud).toFixed(7) + " ";
 
+                        }
+                        waypoints_dron1 = waypoints_dron1.trim();
+
+                        // Envio waypoints a dron 1, si no esta activo, se lo enviamos al dron 2, si este no esta activo,
+                        // no se envian los waypoints
+                        if(dron1_activo){
+                            req_dron1_envio_waypoints.send(waypoints_dron1);
+                        } else{
+                            if (dron2_activo) {
+                                req_dron2_envio_waypoints.send(waypoints_dron1);
+                            }
+                        }
+
+                        break;
+                    case 1:
+                        var jsonDron2 = arr[i].waypoints;
+                        var waypoints_dron2 = "m ";
+
+                        for (var j = 0; j < jsonDron1.length; j++) {
+                            waypoints_dron2 = waypoints_dron2 + (jsonDron2[j].latitud).toFixed(7) + ","
+                                + (jsonDron2[j].longitud).toFixed(7) + " ";
+
+                        }
+                        waypoints_dron2 = waypoints_dron2.trim();
+
+                        // Envio waypoints a dron 2
+                        if(dron2_activo)
+                            req_dron2_envio_waypoints.send(waypoints_dron2);
+
+                        break;
                 }
-                waypoints_dron1 = waypoints_dron1.trim();
+            }
 
-                // Envio waypoints a dron 1, si no esta activo, se lo enviamos al dron 2, si este no esta activo,
-                // no se envian los waypoints
-                if(dron1_activo){
-                    req_dron1_envio_waypoints.send(waypoints_dron1);
-                } else{
-                    if (dron2_activo) {
-                        req_dron2_envio_waypoints.send(waypoints_dron1);
-                    }
+            break;
+        case 1:
+            for (var i = 0; i < arr.length; i++) {
+                switch (i) {
+                    case 0:
+                        var jsonDron1 = arr[i].waypoints;
+                        var waypoints_dron1 = "b ";
+
+                        for (var j = 0; j < jsonDron1.length; j++) {
+                            waypoints_dron1 = waypoints_dron1 + (jsonDron1[j].latitud).toFixed(7) + ","
+                                + (jsonDron1[j].longitud).toFixed(7) + " ";
+
+                        }
+                        waypoints_dron1 = waypoints_dron1.trim();
+
+                        // Envio waypoints a dron 1, si no esta activo, se lo enviamos al dron 2, si este no esta activo,
+                        // no se envian los waypoints
+                        if(dron1_activo){
+                            req_dron1_envio_waypoints.send(waypoints_dron1);
+                        } else{
+                            if (dron2_activo) {
+                                req_dron2_envio_waypoints.send(waypoints_dron1);
+                            }
+                        }
+
+                        break;
+                    case 1:
+                        var jsonDron2 = arr[i].waypoints;
+                        var waypoints_dron2 = "b ";
+
+                        for (var j = 0; j < jsonDron1.length; j++) {
+                            waypoints_dron2 = waypoints_dron2 + (jsonDron2[j].latitud).toFixed(7) + ","
+                                + (jsonDron2[j].longitud).toFixed(7) + " ";
+
+                        }
+                        waypoints_dron2 = waypoints_dron2.trim();
+
+                        // Envio waypoints a dron 2
+                        if(dron2_activo)
+                            req_dron2_envio_waypoints.send(waypoints_dron2);
+
+                        break;
                 }
+            }
 
-                break;
-            case 1:
-                var jsonDron2 = arr[i].waypoints;
-                var waypoints_dron2 = "m ";
+            break;
 
-                for (var j = 0; j < jsonDron1.length; j++) {
-                    waypoints_dron2 = waypoints_dron2 + (jsonDron2[j].latitud).toFixed(7) + ","
-                        + (jsonDron2[j].longitud).toFixed(7) + " ";
-
-                }
-                waypoints_dron2 = waypoints_dron2.trim();
-
-                // Envio waypoints a dron 2
-                if(dron2_activo)
-                    req_dron2_envio_waypoints.send(waypoints_dron2);
-
-                break;
-        }
+        default:
+            break;
     }
+
+
 
     io.emit("ruta_mon_busqueda", arr);
 });
@@ -243,17 +297,27 @@ opencv.on('message', function (data) {
     var jsonOpenCV = JSON.parse(data.toString());
     var positivo = jsonOpenCV['positivo'];
     var id_dron = jsonOpenCV['id_dron'];
+    var lat = jsonOpenCV['lat'];
+    var lng = jsonOpenCV['lng'];
+    var alt = jsonOpenCV['alt'];
+    var path = jsonOpenCV['path'];
+
+    var split = path.split('/');
+
+    path = 'fotos_dron/' + split[split.length - 1];
 
     console.log("Respuesta del modulo OpenCV => " + "[id_dron: " + id_dron + ", positivo: " + positivo);
 
     io.emit('foto', {
-        'url': 'fotos_dron/' + namePhoto + '.png',
+        'url': path,
         'lat': lat,
         'lng': lng,
         'alt': alt,
         'id_dron': parseInt(id_dron),
         'positivo': parseInt(positivo)
     });
+
+
 });
 
 /*******************************************************************************************************************
@@ -265,6 +329,8 @@ sub_dron1_latlng.on('message', function (data) {
     var lat = latlong[0];
     var lng = latlong[1];
     dron1_activo = true;
+
+    console.log("lat: " +lat + ", lng: " + lng + ", heading: " + heading_dron1);
 
     io.emit('posicion', {
         'id_dron': 1,
@@ -286,7 +352,23 @@ sub_dron1_orientacion.on('message', function (data) {
     heading_dron1 = parseInt(split2[0]);
     */
 
-    heading_dron1 = data.toString().trim();
+    switch (tipoMision){
+        case 0:
+        case 1:
+            heading_dron1 = data.toString().trim();
+            break;
+        case 2:
+            console.log(data.toString());
+            var split = (data.toString()).split();
+            var orientacion = split[0].trim();
+            var split2 = orientacion.split(' ');
+
+            heading_dron1 = parseInt(split2[0]);
+            console.log(heading_dron1);
+
+            break;
+
+    }
 });
 
 /*******************************************************************************************************************
@@ -310,7 +392,7 @@ sub_dron1_foto.on('message', function (data) {
         case 1:
         case 2:
             var ruta = '/Users/rubenperezvaz/UAVSPS/www/public/fotos_dron/' + namePhoto + '.png';
-            opencv.send(JSON.stringify({'ruta': ruta, 'id_dron': 1}));
+            opencv.send(JSON.stringify({'ruta': ruta, 'id_dron': 1, 'lat': lat, 'lng': lng, 'alt': alt}));
 
             break;
         default:
@@ -377,8 +459,8 @@ sub_dron2_foto.on('message', function (data) {
     switch (tipoMision){
         case 1:
         case 2:
-            var ruta = '/Users/rubenperezvaz/UAVSPS/www/public/fotos_dron/' + namePhoto + '.png'
-            opencv.send(JSON.stringify({'ruta': ruta, 'id_dron': 2}));
+            var ruta = '/Users/rubenperezvaz/UAVSPS/www/public/fotos_dron/' + namePhoto + '.png';
+            opencv.send(JSON.stringify({'ruta': ruta, 'id_dron': 2, 'lat': lat, 'lng': lng, 'alt': alt}));
 
             break;
         default:
@@ -396,10 +478,22 @@ io.on('connection', function (socket) {
     /*******************************************************************************************************************
      * Aviso fin de misión.
      ******************************************************************************************************************/
+
     socket.on("finalizar_mision", function (data) {
-        console.log(data.mensaje);
-        pub_fin_mision.send(JSON.stringify({'mensaje': data.mensaje}));
+        switch (tipoMision){
+            case 0:
+            case 1:
+                console.log(data.mensaje);
+                pub_fin_mision.send(JSON.stringify({'mensaje': data.mensaje}));
+                break;
+            case 2:
+                console.log(data.mensaje);
+                pub_fin_mision_cir.send(JSON.stringify({'mensaje': data.mensaje}));
+                break;
+        }
     });
+
+
 
 });
 

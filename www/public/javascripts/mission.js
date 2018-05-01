@@ -11,10 +11,10 @@ socket.on('foto', function (data) {
 
     switch (id_dron){
         case 1:
-            setPhoto(data.lat, data.lng, data.url, positivo, "#3F51B5");
+            setPhoto(data.lat, data.lng, data.url, positivo, "#3F51B5", 1);
             break;
         case 2:
-            setPhoto(data.lat, data.lng, data.url, positivo, "#FF9800");
+            setPhoto(data.lat, data.lng, data.url, positivo, "#FF9800", 2);
             break;
         default:
             break;

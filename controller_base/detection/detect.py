@@ -5,6 +5,7 @@ import imutils
 import cv2
 import zmq
 import json
+import time
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
@@ -22,6 +23,11 @@ while True:
     # load the image and resize it to (1) reduce detection time
     # and (2) improve detection accuracy
     image = cv2.imread(imagePath)
+    while image is None:
+        print(imagePath)
+        image = cv2.imread(imagePath)
+        time.sleep(1)
+
     image = imutils.resize(image, width=min(400, image.shape[1]))
     orig = image.copy()
 
@@ -52,6 +58,9 @@ while True:
     #cv2.imshow("Before NMS", orig)
     #cv2.imshow("Resultado", image)
     # cv2.waitKey(10000)
+    cv2.imwrite(imagePath, image)
 
-    result = {'positivo': len(pick), 'id_dron': message['id_dron']}
+    result = {'positivo': len(pick), 'id_dron': message['id_dron'],
+    'path': imagePath, 'lat': message['lat'], 'lng': message['lng'],
+    'alt': message['alt']}
     socket.send_string(json.dumps(result))

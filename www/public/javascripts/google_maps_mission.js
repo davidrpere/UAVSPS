@@ -1,8 +1,6 @@
 var map;
 var markerDron1;
 var markerDron2;
-var marker_photo;
-var positive_marker = [];
 var last_photo_positive = false;
 var flightPath;
 var circle;
@@ -39,9 +37,6 @@ function clear_map() {
     if(flightPath) flightPath.setMap(null);
     for (var i = 0; i < marker_flightPath.length; i++) {
         marker_flightPath[i].setMap(null);
-    }
-    for (var i = 0; i < positive_marker.length; i++) {
-        positive_marker[i].setMap(null);
     }
 }
 
@@ -94,24 +89,263 @@ function setRouteVigilancia(radio, centro_lat, centro_lng, color) {
     circle.setMap(map);
 }
 
-function setPhoto(lat, lng, path, positive, color) {
+function setPhoto(lat, lng, path, positive, color, id_dron) {
     var latlngset = new google.maps.LatLng(lat, lng);
-
-    if (!last_photo_positive && marker_photo)
-        marker_photo.setMap(null);
+    var marker;
 
     if (positive > 0){
-        last_photo_positive = true;
-        var new_maker = true;
-
-        for (var i = 0; i < positive_marker.length; i++) {
-            if (positive_marker[i].getPosition().lat() == latlngset.lat() &&
-                positive_marker[i].getPosition().lng() == latlngset.lng()) {
-                new_maker = false;
+        marker = new google.maps.Marker({
+            map: map,
+            position: latlngset,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                strokeColor: color,
+                strokeOpacity: 1,
+                strokeWeight: 3,
+                fillOpacity: 1,
+                fillColor: '#F44336',
+                fillOpacity: 0.8
             }
-        }
+        });
+    }else {
+        marker = new google.maps.Marker({
+            map: map,
+            position: latlngset,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                strokeColor: color,
+                strokeOpacity: 1,
+                strokeWeight: 3,
+                fillOpacity: 1,
+                fillColor: '#4CAF50',
+                fillOpacity: 0.8
+            }
+        });
+    }
 
-        if (new_maker){
+    google.maps.event.addListener(marker, 'click', function () {
+        $.magnificPopup.open({
+            type: 'image',
+            items: {
+                src: path
+            }
+        });
+    });
+}
+
+function setPhoto2(lat, lng, path, positive, color, id_dron) {
+    var latlngset = new google.maps.LatLng(lat, lng);
+
+    switch (id_dron){
+        case 1:
+            if (!last_photo_positive && marker_photo1)
+                marker_photo1.setMap(null);
+
+            if (positive > 0){
+                last_photo_positive = true;
+                var new_maker = true;
+
+                for (var i = 0; i < positive_marker_dron1.length; i++) {
+                    if (positive_marker_dron1[i].getPosition().lat() == latlngset.lat() &&
+                        positive_marker_dron1[i].getPosition().lng() == latlngset.lng()) {
+                        new_maker = false;
+                    }
+                }
+
+                if (new_maker){
+                    marker_photo1 = new google.maps.Marker({
+                        map: map,
+                        position: latlngset,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 10,
+                            strokeColor: color,
+                            strokeOpacity: 1,
+                            strokeWeight: 3,
+                            fillOpacity: 1,
+                            fillColor: '#F44336',
+                            fillOpacity: 0.8
+                        }
+                    });
+
+                    positive_marker_dron1.push(marker_photo1);
+
+                    google.maps.event.addListener(marker_photo1, 'click', function () {
+                        $.magnificPopup.open({
+                            type: 'image',
+                            items: {
+                                src: path
+                            }
+                        });
+                    });
+                }
+            }else {
+                last_photo_positive = false;
+
+                var aux_positive_marker = [];
+                for (var i = 0; i < positive_marker_dron1.length; i++) {
+                    if(positive_marker_dron1[i].getPosition().lat() == latlngset.lat() &&
+                        positive_marker_dron1[i].getPosition().lng() == latlngset.lng()){
+                        positive_marker_dron1[i].setMap(null);
+                    }else {
+                        aux_positive_marker.push(positive_marker[i]);
+                    }
+                }
+
+                positive_marker_dron1 = aux_positive_marker;
+
+                marker_photo1 = new google.maps.Marker({
+                    map: map,
+                    position: latlngset,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        strokeColor: color,
+                        strokeOpacity: 1,
+                        strokeWeight: 3,
+                        fillOpacity: 1,
+                        fillColor: '#4CAF50',
+                        fillOpacity: 0.8
+                    }
+                });
+
+                google.maps.event.addListener(marker_photo1, 'click', function () {
+                    $.magnificPopup.open({
+                        type: 'image',
+                        items: {
+                            src: path
+                        }
+                    });
+                });
+            }
+
+            break;
+        case 2:
+            if (!last_photo_positive && marker_photo2)
+                marker_photo2.setMap(null);
+
+            if (positive > 0){
+                last_photo_positive = true;
+                var new_maker = true;
+
+                for (var i = 0; i < positive_marker_dron2.length; i++) {
+                    if (positive_marker_dron2[i].getPosition().lat() == latlngset.lat() &&
+                        positive_marker_dron2[i].getPosition().lng() == latlngset.lng()) {
+                        new_maker = false;
+                    }
+                }
+
+                if (new_maker){
+                    marker_photo2 = new google.maps.Marker({
+                        map: map,
+                        position: latlngset,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 10,
+                            strokeColor: color,
+                            strokeOpacity: 1,
+                            strokeWeight: 3,
+                            fillOpacity: 1,
+                            fillColor: '#F44336',
+                            fillOpacity: 0.8
+                        }
+                    });
+
+                    positive_marker_dron2.push(marker_photo2);
+
+                    google.maps.event.addListener(marker_photo2, 'click', function () {
+                        $.magnificPopup.open({
+                            type: 'image',
+                            items: {
+                                src: path
+                            }
+                        });
+                    });
+                }
+            }else {
+                last_photo_positive = false;
+
+                var aux_positive_marker = [];
+                for (var i = 0; i < positive_marker_dron2.length; i++) {
+                    if(positive_marker_dron2[i].getPosition().lat() == latlngset.lat() &&
+                        positive_marker_dron2[i].getPosition().lng() == latlngset.lng()){
+                        positive_marker_dron2[i].setMap(null);
+                    }else {
+                        aux_positive_marker.push(positive_marker_dron2[i]);
+                    }
+                }
+
+                positive_marker_dron2 = aux_positive_marker;
+
+                marker_photo2 = new google.maps.Marker({
+                    map: map,
+                    position: latlngset,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        strokeColor: color,
+                        strokeOpacity: 1,
+                        strokeWeight: 3,
+                        fillOpacity: 1,
+                        fillColor: '#4CAF50',
+                        fillOpacity: 0.8
+                    }
+                });
+
+                google.maps.event.addListener(marker_photo2, 'click', function () {
+                    $.magnificPopup.open({
+                        type: 'image',
+                        items: {
+                            src: path
+                        }
+                    });
+                });
+            }
+
+            break;
+    }
+}
+
+function setPhoto3(lat, lng, path, positive, color) {
+    var latlngset = new google.maps.LatLng(lat, lng);
+
+    for (var i = 0; i < positive_marker.length; i++) {
+        if (positive_marker[i].getPosition().lat() == latlngset.lat() &&
+            positive_marker[i].getPosition().lng() == latlngset.lng()) {
+            new_maker = false;
+        }
+    }
+
+    if (new_maker){
+        if (positive > 0) {
+            marker_photo = new google.maps.Marker({
+                map: map,
+                position: latlngset,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    strokeColor: color,
+                    strokeOpacity: 1,
+                    strokeWeight: 3,
+                    fillOpacity: 1,
+                    fillColor: '#F44336',
+                    fillOpacity: 0.8
+                }
+            });
+
+            positive_marker.push(marker_photo);
+
+            google.maps.event.addListener(marker_photo, 'click', function () {
+                $.magnificPopup.open({
+                    type: 'image',
+                    items: {
+                        src: path
+                    }
+                });
+            });
+        }else {
             marker_photo = new google.maps.Marker({
                 map: map,
                 position: latlngset,
@@ -138,44 +372,6 @@ function setPhoto(lat, lng, path, positive, color) {
                 });
             });
         }
-    }else {
-        last_photo_positive = false;
-
-        var aux_positive_marker = [];
-        for (var i = 0; i < positive_marker.length; i++) {
-            if(positive_marker[i].getPosition().lat() == latlngset.lat() &&
-                positive_marker[i].getPosition().lng() == latlngset.lng()){
-                positive_marker[i].setMap(null);
-            }else {
-                aux_positive_marker.push(positive_marker[i]);
-            }
-        }
-
-        positive_marker = aux_positive_marker;
-
-        marker_photo = new google.maps.Marker({
-            map: map,
-            position: latlngset,
-            icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                strokeColor: color,
-                strokeOpacity: 1,
-                strokeWeight: 3,
-                fillOpacity: 1,
-                fillColor: '#F44336',
-                fillOpacity: 0.8
-            }
-        });
-
-        google.maps.event.addListener(marker_photo, 'click', function () {
-            $.magnificPopup.open({
-                type: 'image',
-                items: {
-                    src: path
-                }
-            });
-        });
     }
 }
 
@@ -204,7 +400,7 @@ function setDronePosition(lat, lng, orientacion, id_dron) {
                     $.magnificPopup.open({
                         type: 'iframe',
                         items: {
-                            src: 'http://192.168.43.92:8000/index.html'
+                            src: 'http://192.168.43.219:8000/index.html'
                         }
                     });
                 });
@@ -232,7 +428,7 @@ function setDronePosition(lat, lng, orientacion, id_dron) {
                     $.magnificPopup.open({
                         type: 'iframe',
                         items: {
-                            src: 'http://192.168.43.219:8000/index.html'
+                            src: 'http://192.168.43.92:8000/index.html'
                         }
                     });
                 });

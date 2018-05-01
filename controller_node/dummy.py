@@ -13,8 +13,13 @@ def finMision(dron1):
         print("cancelamos mision")
         dron1.setFinMision()
 
-dron1 = UAV(1, "", [0,0], 5)
-t = threading.Thread(target=finMision, args=(dron1,))
-t.start()
 
-dron1.startBucleMision()
+try:
+    dron1 = UAV(1, "", [0,0], 5)
+    t = threading.Thread(target=finMision, args=(dron1,))
+    t.start()
+
+    dron1.startBucleMision()
+finally:
+    t.do_run = False
+    t.join()

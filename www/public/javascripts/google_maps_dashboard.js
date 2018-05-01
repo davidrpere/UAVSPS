@@ -204,7 +204,7 @@ function setDronePosition(lat, lng, orientacion, id_dron) {
                     $.magnificPopup.open({
                         type: 'iframe',
                         items: {
-                            src: 'http://192.168.43.92:8000/index.html'
+                            src: 'http://192.168.43.219:8000/index.html'
                         }
                     });
                 });
@@ -232,7 +232,7 @@ function setDronePosition(lat, lng, orientacion, id_dron) {
                     $.magnificPopup.open({
                         type: 'iframe',
                         items: {
-                            src: 'http://192.168.43.219:8000/index.html'
+                            src: 'http://192.168.43.92:8000/index.html'
                         }
                     });
                 });
